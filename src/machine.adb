@@ -161,6 +161,11 @@ package body Machine with SPARK_Mode is
       Ret : ReturnCode := Success;
    begin
       -- Static Analysis
+      -- examine program code to detect invalid behaviour
+      -- TODO: static analysis
+
+      -- Dynamic Analysis
+      -- run dynamic analysis after static analysis does not detect invalid behaviour
       PC := ProgramCounter'First;
       while (CycleCount < Cycles and Ret = Success) loop
          Inst := Prog(PC);
@@ -213,18 +218,6 @@ package body Machine with SPARK_Mode is
             when Instruction.RET =>
                Result := Integer(Regs(Inst.RetRs));
                Ret := Success;
-               -- Dynamic Analysis
-               -- while (CycleCount < Cycles) loop
-               --    CycleCount := CycleCount + 1;
-               -- end loop;
-               -- ExecuteProgram(Prog, Cycles, Ret, Result);
-               -- if Ret = Success then
-               --    return True;
-               -- elsif Ret = CyclesExhausted then
-               --    return False;
-               -- elsif Ret = IllegalProgram then
-               --    return False;
-               -- end if;
                return False;
             when JMP =>
                -- raised CONSTRAINT_ERROR : machine.adb range check failed
