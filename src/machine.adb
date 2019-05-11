@@ -183,14 +183,28 @@ package body Machine with SPARK_Mode is
             when DIV =>
                -- raised CONSTRAINT_ERROR : machine.adb divide by zero
                if Regs(Inst.DivRs2) = 0 then
-                  return False;
+                  return True;
                end if;
                DoDiv(Inst.DivRd,Inst.DivRs1,Inst.DivRs2,Ret);
                IncPC(Ret,1);
             when LDR =>
+               -- Rd = Ra, Rs = Rb
+               -- raised CONSTRAINT_ERROR : machine.adb range check failed
+               if (Integer(Inst.LdrRs) + Integer(Inst.LdrOffs)) < 0 then
+                  return True;
+               elsif (Integer(Inst.LdrRs) + Integer(Inst.LdrOffs)) > 65535 then
+                  return True;
+               end if;
                DoLdr(Inst.LdrRd,Inst.LdrRs,Inst.LdrOffs,Ret);
                IncPC(Ret,1);
             when STR =>
+               -- is Ra and Rb swapped? Ra = Rb, Rb = Ra
+               -- raised CONSTRAINT_ERROR : machine.adb range check failed
+               if (Integer(Inst.StrRa) + Integer(Inst.StrOffs)) < 0 then
+                  return True;
+               elsif (Integer(Inst.StrRa) + Integer(Inst.StrOffs)) > 65535 then
+                  return True;
+               end if;
                DoStr(Inst.StrRa,Inst.StrOffs,Inst.StrRb,Ret);
                IncPC(Ret,1);
             when MOV =>
@@ -199,22 +213,34 @@ package body Machine with SPARK_Mode is
             when Instruction.RET =>
                Result := Integer(Regs(Inst.RetRs));
                Ret := Success;
-               return True;
+               -- Dynamic Analysis
+               -- while (CycleCount < Cycles) loop
+               --    CycleCount := CycleCount + 1;
+               -- end loop;
+               -- ExecuteProgram(Prog, Cycles, Ret, Result);
+               -- if Ret = Success then
+               --    return True;
+               -- elsif Ret = CyclesExhausted then
+               --    return False;
+               -- elsif Ret = IllegalProgram then
+               --    return False;
+               -- end if;
+               return False;
             when JMP =>
                -- raised CONSTRAINT_ERROR : machine.adb range check failed
                if (Integer(PC) + Integer(Inst.JmpOffs)) < 0 then
-                  return False;
+                  return True;
                elsif (Integer(PC) + Integer(Inst.JmpOffs)) > 65535 then
-                  return False;
+                  return True;
                end if;
                IncPC(Ret,Inst.JmpOffs);
             when JZ =>
                if Regs(Inst.JzRa) = 0 then
                   -- raised CONSTRAINT_ERROR : machine.adb range check failed
                   if (Integer(PC) + Integer(Inst.JzOffs)) < 0 then
-                     return False;
+                     return True;
                   elsif (Integer(PC) + Integer(Inst.JzOffs)) > 65535 then
-                     return False;
+                     return True;
                   end if;
                   IncPC(Ret,Inst.JzOffs);
                else
@@ -229,20 +255,7 @@ package body Machine with SPARK_Mode is
           -- Cycles instructions executed without a RET or invalid behaviour
           Ret := CyclesExhausted;
        end if;
-
-      -- Dynamic Analysis
-      -- while (CycleCount < Cycles) loop
-      --    CycleCount := CycleCount + 1;
-      -- end loop;
-      -- ExecuteProgram(Prog, Cycles, Ret, Result);
-      -- if Ret = Success then
-      --    return True;
-      -- elsif Ret = CyclesExhausted then
-      --    return False;
-      -- elsif Ret = IllegalProgram then
-      --    return False;
-      -- end if;
-      return False;
+      return True;
    end DetectInvalidBehaviour;
 
 end Machine;
