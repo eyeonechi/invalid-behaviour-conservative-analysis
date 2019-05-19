@@ -19,10 +19,17 @@ package body Machine with SPARK_Mode is
    -- the program counter
    PC : ProgramCounter := ProgramCounter'First;
       
-   procedure IncPC(Ret : out ReturnCode; Offs : in Offset) is
+   procedure IncPC(Ret :in out ReturnCode; Offs : in Offset) is 
    begin
-      PC := ProgramCounter(Integer(PC) + Integer(Offs));
-      Ret := Success;
+      if Ret = Success then
+         if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Offs)) 
+           and ( Integer(PC) >= Integer(ProgramCounter'First) - Integer(Offs)) then
+            PC := ProgramCounter(Integer(PC) + Integer(Offs));
+            Ret := Success;
+         else
+            Ret := IllegalProgram;
+         end if;
+      end if;
    end IncPC;
    
    procedure DoAdd(Rd : in Reg; 
@@ -30,8 +37,14 @@ package body Machine with SPARK_Mode is
                    Rs2 : in Reg;
                    Ret : out ReturnCode) is
    begin
-      Regs(Rd) := Regs(Rs1) + Regs(Rs2);
-      Ret := Success;
+      if (Regs(Rs2) > 0 and then Regs(Rs1) > DataVal'Last - Regs(Rs2)) then
+         Ret := IllegalProgram;
+      elsif (Regs(Rs2) < 0 and then Regs(Rs1) < DataVal'First - Regs(Rs2)) then
+         Ret := IllegalProgram;
+      else
+         Regs(Rd) := Regs(Rs1) + Regs(Rs2);
+         Ret := Success;
+      end if;
    end DoAdd;
    
    procedure DoSub(Rd : in Reg; 
@@ -39,8 +52,13 @@ package body Machine with SPARK_Mode is
                    Rs2 : in Reg;
                    Ret : out ReturnCode) is
    begin
-      Regs(Rd) := Regs(Rs1) - Regs(Rs2);
-      Ret := Success;
+      if (Regs(Rs2) < 0 and then Regs(Rs1) > DataVal'Last + Regs(Rs2)) or
+          (Regs(Rs2) > 0 and then Regs(Rs1) < DataVal'First + Regs(Rs2)) then
+         Ret := IllegalProgram;
+      else 
+         Regs(Rd) := Regs(Rs1) - Regs(Rs2);
+         Ret := Success;
+      end if;
    end DoSub;
    
    procedure DoMul(Rd : in Reg; 
@@ -48,8 +66,16 @@ package body Machine with SPARK_Mode is
                    Rs2 : in Reg;
                    Ret : out ReturnCode) is
    begin
-      Regs(Rd) := Regs(Rs1) * Regs(Rs2);
-      Ret := Success;
+      if (Regs(Rs1) < 0 and then Regs(Rs2) < 0 and then Regs(Rs1) < DataVal'Last / Regs(Rs2)) then
+         Ret := IllegalProgram;
+      elsif (Regs(Rs1) < 0 and then Regs(Rs2) > 0 and then DataVal'First / Regs(Rs2) > Regs(Rs1)) then
+         Ret := IllegalProgram;
+      elsif (Regs(Rs2) /= 0 and then Regs(Rs1) > 0 and then Regs(Rs1) > DataVal'Last / Regs(Rs2)) then
+         Ret := IllegalProgram;
+      else
+        Regs(Rd) := Regs(Rs1) * Regs(Rs2);
+        Ret := Success;
+      end if;
    end DoMul;
    
    procedure DoDiv(Rd : in Reg; 
@@ -57,33 +83,53 @@ package body Machine with SPARK_Mode is
                    Rs2 : in Reg;
                    Ret : out ReturnCode) is
    begin
-      Regs(Rd) := Regs(Rs1) / Regs(Rs2);
-      Ret := Success;
+      if Regs(Rs2) = 0 or (Regs(Rs1) = DataVal'First and Regs(Rs2) = -1) then
+         Ret := IllegalProgram;
+      else
+         Regs(Rd) := Regs(Rs1) / Regs(Rs2);
+         Ret := Success;
+      end if;
    end DoDiv;
    
    procedure DoLdr(Rd : in Reg; 
                    Rs : in Reg; 
                    Offs : in Offset;
                    Ret : out ReturnCode) is
-      A : Addr := Addr(Regs(Rs) + DataVal(Offs));
+   A : Addr;
    begin
-      Regs(Rd) := Memory(A);
-      Ret := Success;
+      if (Integer(Regs (Rs))  > Integer(Addr'Last) - Integer(Offs)) then
+         Ret := IllegalProgram;
+      elsif (Integer(Regs (Rs)) < Integer(Addr'First) - Integer(Offs)) then
+         Ret := IllegalProgram;  
+      else 
+         A := Addr(Regs(Rs) + DataVal(Offs));
+         Regs(Rd) := Memory(A);
+         Ret := Success;
+      end if;
    end DoLdr;
    
    procedure DoStr(Ra : in Reg;
                    Offs : in Offset;
                    Rb : in Reg;
-                   Ret : out ReturnCode) is
-      A : Addr := Addr(Regs(Ra) + DataVal(Offs));   
+                   Ret : out ReturnCode) is 
+   A : Addr;
    begin
-      Memory(A) := Regs(Rb);
-      Ret := Success;
+      if (Integer(Regs (Ra) ) > Integer(Addr'Last) - Integer(Offs)) then
+         Ret := IllegalProgram;
+      elsif  (Integer(Regs (Ra)) < Integer(Addr'First) - Integer(Offs)) then
+         Ret := IllegalProgram;  
+      else 
+         A := Addr(Regs(Ra) + DataVal(Offs));   
+         Memory(A) := Regs(Rb);
+         Ret := Success;
+      end if;
    end DoStr;
    
    procedure DoMov(Rd : in Reg;
                    Offs : in Offset;
-                   Ret : out ReturnCode) is
+                   Ret : out ReturnCode) with
+   Pre => Integer(Offs) >= Integer(DataVal'First) and then Integer(Offs) <= Integer(DataVal'Last)
+   is
    begin
       Regs(Rd) := DataVal(Offs);
       Ret := Success;
