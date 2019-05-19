@@ -1,0 +1,81 @@
+{
+  "spark": [
+    {
+      "name": "Debug",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 2
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.Put",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 4
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.Put_Line",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 8
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.Put",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 12
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.New_Line",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 16
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.Put",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 20
+        }
+      ],
+      "spark": "spec"
+    }
+  ],
+  "flow": [
+  ],
+  "proof": [
+  ],
+  "assumptions": [
+  ],
+  "timings": {
+    "marking": 3.00409994088113E-03,
+    "globals (basic)": 5.02586603164673E-01,
+    "globals/properties (advanced)": 4.29063998162746E-02,
+    "flow analysis": 2.65070004388690E-03,
+    "codepeer results": 8.60000000102445E-06,
+    "init_why_sections": 1.79430004209280E-03,
+    "translation of standard": 9.40559990704060E-03,
+    "translation of compilation unit": 6.78894966840744E-02,
+    "proof": 3.59999989996140E-06
+  }
+}

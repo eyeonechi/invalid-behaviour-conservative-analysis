@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<Locations>
+  <Project>
+    <vfs_file>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_file>
+    <file_marker column=" 1" line=" 1" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 33" line=" 38" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 27" line=" 25" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\driver.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 1" line=" 131" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 11" line=" 89" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 11" line=" 81" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 11" line=" 89" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 11" line=" 43" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
+    </file_marker>
+    <file_marker column=" 1" line=" 113" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
+    </file_marker>
+    <file_marker current="true" column=" 11" line=" 34" >
+      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
+      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
+    </file_marker>
+  </Project>
+</Locations>

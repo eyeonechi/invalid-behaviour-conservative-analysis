@@ -1,0 +1,1643 @@
+{
+  "spark": [
+    {
+      "name": "Instruction",
+      "sloc": [
+        {
+          "file": "instruction.ads",
+          "line": 2
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Instruction.Init",
+      "sloc": [
+        {
+          "file": "instruction.ads",
+          "line": 70
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Instruction.GenerateRandomInstr",
+      "sloc": [
+        {
+          "file": "instruction.ads",
+          "line": 74
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Instruction.DebugPrintInstr",
+      "sloc": [
+        {
+          "file": "instruction.ads",
+          "line": 78
+        }
+      ],
+      "spark": "all"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Generator",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 50
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Random",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 52
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 54
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 55
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.State",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 59
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Save",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 61
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 62
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Image",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 66
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Value",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 67
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Generator",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 50
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Random",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 52
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 54
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 55
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.State",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 59
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Save",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 61
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 62
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Image",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 66
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Value",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 67
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Generator",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 50
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Random",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 52
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 54
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 55
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.State",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 59
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Save",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 61
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 62
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Image",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 66
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Value",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 67
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.PutReg",
+      "sloc": [
+        {
+          "file": "instruction.adb",
+          "line": 65
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.PutOffset",
+      "sloc": [
+        {
+          "file": "instruction.adb",
+          "line": 71
+        }
+      ],
+      "spark": "no"
+    }
+  ],
+  "flow": [
+  ],
+  "proof": [
+    {
+      "file": "instruction.adb",
+      "line": 106,
+      "col": 36,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 3.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 106,
+      "check_col": 36,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 2.99999993294477E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 91,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 5.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 91,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.00000007450581E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 105,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 6.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 105,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.99999986588955E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 118,
+      "col": 36,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 6.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 118,
+      "check_col": 36,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.99999986588955E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 109,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 8.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 109,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 7.99999982118607E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 86,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 5.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 86,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.00000007450581E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 87,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 8.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 87,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 7.99999982118607E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 88,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 8.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 88,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 7.99999982118607E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 122,
+      "col": 36,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 5.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 122,
+      "check_col": 36,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.00000007450581E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 82,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 8.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 82,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 7.99999982118607E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 110,
+      "col": 36,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 8.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 110,
+      "check_col": 36,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 7.99999982118607E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 111,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 8.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 111,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 7.99999982118607E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 114,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 8.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 114,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 7.99999982118607E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 121,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 5.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 121,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.00000007450581E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 83,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 6.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 83,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.99999986588955E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 115,
+      "col": 36,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 5.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 115,
+      "check_col": 36,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.00000007450581E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 93,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 6.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 93,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.99999986588955E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 92,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 6.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 92,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.99999986588955E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 104,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 2.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 104,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 1.99999995529652E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 101,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 5.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 101,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.00000007450581E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 96,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 5.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 96,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.00000007450581E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 81,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 5.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 81,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.00000007450581E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 98,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 6.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 98,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.99999986588955E-02
+        }
+      }
+    },
+    {
+      "file": "instruction.adb",
+      "line": 97,
+      "col": 33,
+      "rule": "VC_DISCRIMINANT_CHECK",
+      "severity": "info",
+      "entity": {
+        "name": "Instruction.DebugPrintInstr",
+        "sloc": [
+          {
+            "file": "instruction.ads",
+            "line": 78
+          }
+        ]
+      },
+      "check_tree": [
+        {
+          "proof_attempts": {
+            "CVC4": {
+              "result": "Valid",
+              "steps": 5,
+              "time": 6.00000000000000E-02
+            }
+          },
+          "transformations": {
+          }
+        }
+      ],
+      "check_file": "instruction.adb",
+      "check_line": 97,
+      "check_col": 33,
+      "how_proved": "prover",
+      "stats": {
+        "CVC4": {
+          "count": 1,
+          "max_steps": 1,
+          "max_time": 5.99999986588955E-02
+        }
+      }
+    }
+  ],
+  "assumptions": [
+    {
+      "assumptions": [
+      ],
+      "claim": {
+        "predicate": "CLAIM_AORTE",
+        "arg": {
+          "name": "Instruction",
+          "sloc": [
+            {
+              "file": "instruction.ads",
+              "line": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "assumptions": [
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Debug.Put",
+            "sloc": [
+              {
+                "file": "debug.ads",
+                "line": 4
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Debug.Put",
+            "sloc": [
+              {
+                "file": "debug.ads",
+                "line": 20
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Instruction.PutOffset",
+            "sloc": [
+              {
+                "file": "instruction.adb",
+                "line": 71
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Instruction.PutReg",
+            "sloc": [
+              {
+                "file": "instruction.adb",
+                "line": 65
+              }
+            ]
+          }
+        }
+      ],
+      "claim": {
+        "predicate": "CLAIM_EFFECTS",
+        "arg": {
+          "name": "Instruction.DebugPrintInstr",
+          "sloc": [
+            {
+              "file": "instruction.ads",
+              "line": 78
+            }
+          ]
+        }
+      }
+    },
+    {
+      "assumptions": [
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Debug.Put",
+            "sloc": [
+              {
+                "file": "debug.ads",
+                "line": 4
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Debug.Put",
+            "sloc": [
+              {
+                "file": "debug.ads",
+                "line": 20
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Instruction.PutOffset",
+            "sloc": [
+              {
+                "file": "instruction.adb",
+                "line": 71
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Instruction.PutReg",
+            "sloc": [
+              {
+                "file": "instruction.adb",
+                "line": 65
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_AORTE",
+          "arg": {
+            "name": "Debug.Put",
+            "sloc": [
+              {
+                "file": "debug.ads",
+                "line": 4
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_AORTE",
+          "arg": {
+            "name": "Debug.Put",
+            "sloc": [
+              {
+                "file": "debug.ads",
+                "line": 20
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_AORTE",
+          "arg": {
+            "name": "Instruction.PutOffset",
+            "sloc": [
+              {
+                "file": "instruction.adb",
+                "line": 71
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_AORTE",
+          "arg": {
+            "name": "Instruction.PutReg",
+            "sloc": [
+              {
+                "file": "instruction.adb",
+                "line": 65
+              }
+            ]
+          }
+        }
+      ],
+      "claim": {
+        "predicate": "CLAIM_AORTE",
+        "arg": {
+          "name": "Instruction.DebugPrintInstr",
+          "sloc": [
+            {
+              "file": "instruction.ads",
+              "line": 78
+            }
+          ]
+        }
+      }
+    },
+    {
+      "assumptions": [
+      ],
+      "claim": {
+        "predicate": "CLAIM_AORTE",
+        "arg": {
+          "name": "Instruction.Init",
+          "sloc": [
+            {
+              "file": "instruction.ads",
+              "line": 70
+            }
+          ]
+        }
+      }
+    },
+    {
+      "assumptions": [
+      ],
+      "claim": {
+        "predicate": "CLAIM_AORTE",
+        "arg": {
+          "name": "Instruction.GenerateRandomInstr",
+          "sloc": [
+            {
+              "file": "instruction.ads",
+              "line": 74
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "timings": {
+    "marking": 2.72800005041063E-03,
+    "globals (basic)": 4.94120687246323E-01,
+    "globals/properties (advanced)": 6.13480992615223E-02,
+    "flow analysis": 7.07528963685036E-02,
+    "codepeer results": 7.60000011723605E-06,
+    "init_why_sections": 4.47099999291822E-04,
+    "translation of standard": 8.54529999196529E-03,
+    "translation of compilation unit": 5.96549995243549E-02,
+    "proof": 3.93853735923767E+00
+  }
+}
