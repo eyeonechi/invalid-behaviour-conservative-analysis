@@ -199,6 +199,15 @@ package body Machine with SPARK_Mode is
       end if;
    end ExecuteProgram;
 
+
+   procedure IncPC(PC : in out ProgramCounter; Offs : in Offset) is 
+   begin
+         if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Offs)) 
+           and ( Integer(PC) >= Integer(ProgramCounter'First) - Integer(Offs)) then
+            PC := ProgramCounter(Integer(PC) + Integer(Offs));
+         end if;
+   end IncPC;
+   
    function DetectInvalidBehaviour(Prog : in Program;
                                    Cycles : in Integer) return Boolean 
    is
@@ -216,68 +225,72 @@ package body Machine with SPARK_Mode is
          New_Line;
          case Inst.Op is
             when ADD =>
-               if Regs(Inst.AddRs1)+Regs(Inst.AddRs2) > (2**31 - 1) then
+               if Regs(Inst.AddRs2) > 0 and then Regs(Inst.AddRs1) > DataVal'Last - Regs(Inst.AddRs2) then
                    return True;
-               elsif Regs(Inst.AddRs1)+Regs(Inst.AddRs2) < -(2**31) then
+               elsif Regs(Inst.AddRs2) < 0 and then Regs(Inst.AddRs1) < DataVal'First - Regs(Inst.AddRs2) then
                    return True;
                else
                   Regs(Inst.AddRd) := Regs(Inst.AddRs1) + Regs(Inst.AddRs2);
                end if;
-               PC := ProgramCounter(Integer(PC) + Integer(1));
+               IncPC(PC,1);
             when SUB =>
-               if Regs(Inst.SubRs1)-Regs(Inst.SubRs2) > (2**31 - 1) then
+               if Regs(Inst.SubRs2) < 0 and then (Regs(Inst.SubRs1) > DataVal'Last +  Regs(Inst.SubRs2)) then
                   return True;
-               elsif Regs(Inst.SubRs1)-Regs(Inst.SubRs2) < -(2**31) then
+               elsif Regs(Inst.SubRs2) > 0 and then (Regs(Inst.SubRs1) < DataVal'First + Regs(Inst.SubRs2)) then
                   return True;
                else
                   Regs(Inst.SubRd) := Regs(Inst.SubRs1) - Regs(Inst.SubRs2);
                end if;
-               PC := ProgramCounter(Integer(PC) + Integer(1));
+               IncPC(PC,1);
             when MUL =>
-               if Regs(Inst.MulRs1) * Regs(Inst.MulRs2) > (2**31 - 1) then
+               if Regs(Inst.MulRs1) < 0 and then Regs(Inst.MulRs2) < 0 and then Regs(Inst.MulRs1) < DataVal'Last / Regs(Inst.MulRs2) then
                   return True;
-               elsif Regs(Inst.MulRs1) * Regs(Inst.MulRs2) < -(2**31) then
+               elsif Regs(Inst.MulRs1) < 0 and then Regs(Inst.MulRs2) > 0 and then Regs(Inst.MulRs1) < DataVal'First / Regs(Inst.MulRs2)  then
                   return True;
+               elsif (Regs(Inst.MulRs2) /= 0 and then Regs(Inst.MulRs1) > 0 and then Regs(Inst.MulRs1) > DataVal'Last / Regs(Inst.MulRs2)) then
+                   return True;
                else
                   Regs(Inst.MulRd) := Regs(Inst.MulRs1) * Regs(Inst.MulRs2);
                end if;
-               PC := ProgramCounter(Integer(PC) + Integer(1));
+               IncPC(PC,1);
             when DIV =>
                if Regs(Inst.DivRs2) = 0 then
+                  return True;
+               elsif (Regs(Inst.DivRs1) = DataVal'First and Regs(Inst.DivRs2) = -1) then
                   return True;
                else
                   Regs(Inst.DivRd) := Regs(Inst.DivRs1) / Regs(Inst.DivRs2);
                end if;
-               PC := ProgramCounter(Integer(PC) + Integer(1));
+               IncPC(PC,1);
             when LDR =>
-               if Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs) < 0 then
-                  return True;
-               elsif Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs) > 65535 then 
+               if Regs(Inst.LdrRs) < 0 - DataVal(Inst.LdrOffs) then
+                   return True;
+               elsif Regs(Inst.LdrRs) > 65535 - DataVal(Inst.LdrOffs) then
                   return True;
                else
                   A := Addr(Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs));
                   Regs(Inst.LdrRd) := Memory(A);
                end if;
-               PC := ProgramCounter(Integer(PC) + Integer(1));
+               IncPC(PC,1);
             when STR =>
-               if Regs(Inst.StrRa) + DataVal(Inst.StrOffs) < 0 then
-                  return True;
-               elsif Regs(Inst.StrRa) + DataVal(Inst.StrOffs) > 65535 then
-                  return True;
+               if Regs(Inst.StrRa) < 0 - DataVal(Inst.StrOffs) then
+                   return True;
+               elsif Regs(Inst.StrRa) > 65535 - DataVal(Inst.StrOffs) then
+                   return True;               
                else 
                   A := Addr(Regs(Inst.StrRa) + DataVal(Inst.StrOffs));  
                   Memory(A) := Regs(Inst.StrRb);
                end if;
-               PC := ProgramCounter(Integer(PC) + Integer(1));
+               IncPC(PC,1);
             when MOV =>
-               if Inst.MovOffs < -(2**31)then
+               if Inst.MovOffs < 0 then
                   return True;
-               elsif Inst.MovOffs > (2**31 - 1) then
+               elsif Inst.MovOffs > 65535 then
                   return True;
                else
                   Regs(Inst.MovRd) := DataVal(Inst.MovOffs);
                end if;
-               PC := ProgramCounter(Integer(PC) + Integer(1));
+               IncPC(PC,1);
             when Instruction.RET =>
                return False;
             when JMP =>
@@ -286,7 +299,7 @@ package body Machine with SPARK_Mode is
                elsif Integer(PC) + Integer(Inst.JmpOffs) > 65535 then
                   return True;
                end if;    
-               PC := ProgramCounter(Integer(PC) + Integer(Inst.JmpOffs));
+               IncPC(PC,Inst.JmpOffs);
             when JZ =>
                if Regs(Inst.JzRa) = 0 then
                   if Integer(PC) + Integer(Inst.JzOffs) < 0 then
@@ -294,17 +307,17 @@ package body Machine with SPARK_Mode is
                   elsif Integer(PC) + Integer(Inst.JzOffs) > 65535 then
                      return True;
                   end if;
-                  PC := ProgramCounter(Integer(PC) + Integer(Inst.JzOffs));
+               IncPC(PC,Inst.JzOffs);
                else
                   if Integer(PC) + 1 < 0 then
                      return True;
                   elsif Integer(PC) + 1 > 65535 then
                      return True;
                   end if;
-                  PC := ProgramCounter(Integer(PC) + Integer(1));
+                  IncPC(PC,1);
                end if;
             when NOP =>
-               PC := ProgramCounter(Integer(PC) + Integer(1));
+                IncPC(PC,1);
          end case;  
          CycleCount := CycleCount + 1;
       end loop;   
