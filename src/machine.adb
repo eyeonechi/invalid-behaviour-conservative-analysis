@@ -153,67 +153,87 @@ package body Machine with SPARK_Mode is
       end if;
    end ExecuteProgram;
 
-   function DetectInvalidBehaviour(Prog : in Program;
-                                   Cycles : in Integer) return Boolean is
+   function DetectInvalidBehaviour(Prog : in Program; Cycles : in Integer) return Boolean is
+      -- data values are 32-bit integers
+      -- this is the type of words used in the virtual machine
+      type DataVal is range -(2**31) .. +(2**31 - 1);
+      type Register is array (Reg) of DataVal;
+      type Memory is array (Addr) of DataVal;
+      -- the registers
+      Regs : Register;
+      -- the memory
+      Mem : Memory;
+      -- the program counter
+      PC : ProgramCounter;
       CycleCount : Integer := 0;
       Inst : Instr;
       Result : Integer := 0;
       Ret : ReturnCode := Success;
-      -- the registers
-      Regs : array (Reg) of DataVal;
-      -- the memory
-      Memory : array (Addr) of DataVal;
-      -- the program counter
-      PC : ProgramCounter;
-      function DetectIncPC(Offs : in Offset) return ReturnCode is
+      function DetectIncPC(Offs : in Offset; PC : ProgramCounter) return ProgramCounter is
+         NewPC : ProgramCounter;
       begin
-         -- PC := ProgramCounter(Integer(PC) + Integer(Offs));
-         return Success;
+         NewPC := PC;
+         NewPC := ProgramCounter(Integer(PC) + Integer(Offs));
+         return NewPC;
       end DetectIncPC;
-      function DetectDoAdd(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg) return ReturnCode is
+      function DetectDoAdd(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Regs : in Register) return Register is
+         NewRegs : Register;
       begin
-         -- Regs(Rd) := Regs(Rs1) + Regs(Rs2);
-         return Success;
+         NewRegs := Regs;
+         NewRegs(Rd) := Regs(Rs1) + Regs(Rs2);
+         return NewRegs;
       end DetectDoAdd;
-      function DetectDoSub(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg) return ReturnCode is
+      function DetectDoSub(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Regs : in Register) return Register is
+         NewRegs : Register;
       begin
-         -- Regs(Rd) := Regs(Rs1) - Regs(Rs2);
-         return Success;
+         NewRegs := Regs;
+         NewRegs(Rd) := Regs(Rs1) - Regs(Rs2);
+         return NewRegs;
       end DetectDoSub;
-      function DetectDoMul(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg) return ReturnCode is
+      function DetectDoMul(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Regs : in Register) return Register is
+         NewRegs : Register;
       begin
-         --Regs(Rd) := Regs(Rs1) * Regs(Rs2);
-         return Success;
+         NewRegs := Regs;
+         NewRegs(Rd) := Regs(Rs1) * Regs(Rs2);
+         return NewRegs;
       end DetectDoMul;
-      function DetectDoDiv(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg) return ReturnCode is
+      function DetectDoDiv(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Regs : in Register) return Register is
+         NewRegs : Register;
       begin
-         -- Regs(Rd) := Regs(Rs1) / Regs(Rs2);
-         return Success;
+         NewRegs := Regs;
+         NewRegs(Rd) := Regs(Rs1) / Regs(Rs2);
+         return NewRegs;
       end DetectDoDiv;
-      function DetectDoLdr(Rd : in Reg; Rs : in Reg; Offs : in Offset) return ReturnCode is
-         -- A : Addr := Addr(Regs(Rs) + DataVal(Offs));
+      function DetectDoLdr(Rd : in Reg; Rs : in Reg; Offs : in Offset; Regs : in Register; Mem : in Memory) return Register is
+         A : Addr := Addr(Regs(Rs) + DataVal(Offs));
+         NewRegs : Register;
       begin
-         -- Regs(Rd) := Memory(A);
-         return Success;
+         NewRegs := Regs;
+         NewRegs(Rd) := Mem(A);
+         return NewRegs;
       end DetectDoLdr;
-      function DetectDoStr(Ra : in Reg; Offs : in Offset; Rb : in Reg) return ReturnCode is
-         -- A : Addr := Addr(Regs(Ra) + DataVal(Offs));
+      function DetectDoStr(Ra : in Reg; Offs : in Offset; Rb : in Reg; Regs : in Register; Mem : in Memory) return Memory is
+         A : Addr := Addr(Regs(Ra) + DataVal(Offs));
+         NewMem : Memory;
       begin
-         -- Memory(A) := Regs(Rb);
-         return Success;
+         NewMem := Mem;
+         NewMem(A) := Regs(Rb);
+         return NewMem;
       end DetectDoStr;
-      function DetectDoMov(Rd : in Reg; Offs : in Offset) return ReturnCode is
+      function DetectDoMov(Rd : in Reg; Offs : in Offset; Regs : in Register) return Register is
+         NewRegs : Register;
       begin
-         -- Regs(Rd) := DataVal(Offs);
-         return Success;
+         NewRegs := Regs;
+         NewRegs(Rd) := DataVal(Offs);
+         return NewRegs;
       end DetectDoMov;
    begin
       Regs := (others => 0);
-      Memory := (others => 0);
+      Mem := (others => 0);
       PC := ProgramCounter'First;
       -- Static Analysis
       -- examine program code to detect invalid behaviour
-      -- TODO: static analysis
+      -- TODO: static analysis?
 
       -- Dynamic Analysis
       -- run dynamic analysis after static analysis does not detect invalid behaviour
@@ -228,21 +248,21 @@ package body Machine with SPARK_Mode is
 
          case Inst.Op is
             when ADD =>
-               Ret := DetectDoAdd(Inst.AddRd,Inst.AddRs1,Inst.AddRs2);
-               Ret := DetectIncPC(1);
+               Regs := DetectDoAdd(Inst.AddRd,Inst.AddRs1,Inst.AddRs2, Regs);
+               PC := DetectIncPC(1, PC);
             when SUB =>
-               Ret := DetectDoSub(Inst.SubRd,Inst.SubRs1,Inst.SubRs2);
-               Ret := DetectIncPC(1);
+               Regs := DetectDoSub(Inst.SubRd,Inst.SubRs1,Inst.SubRs2, Regs);
+               PC := DetectIncPC(1, PC);
             when MUL =>
-               Ret := DetectDoMul(Inst.MulRd,Inst.MulRs1,Inst.MulRs2);
-               Ret := DetectIncPC(1);
+               Regs := DetectDoMul(Inst.MulRd,Inst.MulRs1,Inst.MulRs2, Regs);
+               PC := DetectIncPC(1, PC);
             when DIV =>
                -- raised CONSTRAINT_ERROR : machine.adb divide by zero
                if Regs(Inst.DivRs2) = 0 then
                   return True;
                end if;
-               Ret := DetectDoDiv(Inst.DivRd,Inst.DivRs1,Inst.DivRs2);
-               Ret := DetectIncPC(1);
+               Regs := DetectDoDiv(Inst.DivRd,Inst.DivRs1,Inst.DivRs2, Regs);
+               PC := DetectIncPC(1, PC);
             when LDR =>
                -- Rd = Ra, Rs = Rb
                -- raised CONSTRAINT_ERROR : machine.adb range check failed
@@ -251,8 +271,8 @@ package body Machine with SPARK_Mode is
                elsif (Integer(Inst.LdrRs) + Integer(Inst.LdrOffs)) > 65535 then
                   return True;
                end if;
-               Ret := DetectDoLdr(Inst.LdrRd,Inst.LdrRs,Inst.LdrOffs);
-               Ret := DetectIncPC(1);
+               Regs := DetectDoLdr(Inst.LdrRd,Inst.LdrRs,Inst.LdrOffs, Regs, Mem);
+               PC := DetectIncPC(1, PC);
             when STR =>
                -- is Ra and Rb swapped? Ra = Rb, Rb = Ra
                -- raised CONSTRAINT_ERROR : machine.adb range check failed
@@ -261,11 +281,11 @@ package body Machine with SPARK_Mode is
                elsif (Integer(Inst.StrRa) + Integer(Inst.StrOffs)) > 65535 then
                   return True;
                end if;
-               Ret := DetectDoStr(Inst.StrRa,Inst.StrOffs,Inst.StrRb);
-               Ret := DetectIncPC(1);
+               Mem := DetectDoStr(Inst.StrRa,Inst.StrOffs,Inst.StrRb, Regs, Mem);
+               PC := DetectIncPC(1, PC);
             when MOV =>
-               Ret := DetectDoMov(Inst.MovRd,Inst.MovOffs);
-               Ret := DetectIncPC(1);
+               Regs := DetectDoMov(Inst.MovRd,Inst.MovOffs, Regs);
+               PC := DetectIncPC(1, PC);
             when Instruction.RET =>
                Result := Integer(Regs(Inst.RetRs));
                Ret := Success;
@@ -277,7 +297,7 @@ package body Machine with SPARK_Mode is
                elsif (Integer(PC) + Integer(Inst.JmpOffs)) > 65535 then
                   return True;
                end if;
-               Ret := DetectIncPC(Inst.JmpOffs);
+               PC := DetectIncPC(Inst.JmpOffs, PC);
             when JZ =>
                if Regs(Inst.JzRa) = 0 then
                   -- raised CONSTRAINT_ERROR : machine.adb range check failed
@@ -286,12 +306,12 @@ package body Machine with SPARK_Mode is
                   elsif (Integer(PC) + Integer(Inst.JzOffs)) > 65535 then
                      return True;
                   end if;
-                  Ret := DetectIncPC(Inst.JzOffs);
+                  PC := DetectIncPC(Inst.JzOffs, PC);
                else
-                  Ret := DetectIncPC(1);
+                  PC := DetectIncPC(1, PC);
                end if;
             when NOP =>
-               Ret := DetectIncPC(1);
+               PC := DetectIncPC(1, PC);
          end case;
          CycleCount := CycleCount + 1;
        end loop;
