@@ -167,14 +167,11 @@ package body Machine with SPARK_Mode is
       PC : ProgramCounter;
       CycleCount : Integer := 0;
       Inst : Instr;
-      Result : Integer := 0;
+      -- Result : Integer;
       Ret : ReturnCode := Success;
       function DetectIncPC(Offs : in Offset; PC : ProgramCounter) return ProgramCounter is
-         NewPC : ProgramCounter;
       begin
-         NewPC := PC;
-         NewPC := ProgramCounter(Integer(PC) + Integer(Offs));
-         return NewPC;
+         return ProgramCounter(Integer(PC) + Integer(Offs));
       end DetectIncPC;
       function DetectDoAdd(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Regs : in Register) return Register is
          NewRegs : Register;
@@ -248,12 +245,27 @@ package body Machine with SPARK_Mode is
 
          case Inst.Op is
             when ADD =>
+               if Regs(Inst.AddRs1)+Regs(Inst.AddRs2) > (2**31 - 1) then
+                   return True;
+               elsif Regs(Inst.AddRs1)+Regs(Inst.AddRs2) < -(2**31) then
+                  return True;
+               end if;
                Regs := DetectDoAdd(Inst.AddRd,Inst.AddRs1,Inst.AddRs2, Regs);
                PC := DetectIncPC(1, PC);
             when SUB =>
+               if Regs(Inst.SubRs1)-Regs(Inst.SubRs2) > (2**31 - 1) then
+                  return True;
+               elsif Regs(Inst.SubRs1)-Regs(Inst.SubRs2) < -(2**31) then
+                  return True;
+               end if;
                Regs := DetectDoSub(Inst.SubRd,Inst.SubRs1,Inst.SubRs2, Regs);
                PC := DetectIncPC(1, PC);
             when MUL =>
+               if Regs(Inst.MulRs1) * Regs(Inst.MulRs2) > (2**31 - 1) then
+                  return True;
+               elsif Regs(Inst.MulRs1) * Regs(Inst.MulRs2) < -(2**31) then
+                  return True;
+               end if;
                Regs := DetectDoMul(Inst.MulRd,Inst.MulRs1,Inst.MulRs2, Regs);
                PC := DetectIncPC(1, PC);
             when DIV =>
@@ -266,9 +278,9 @@ package body Machine with SPARK_Mode is
             when LDR =>
                -- Rd = Ra, Rs = Rb
                -- raised CONSTRAINT_ERROR : machine.adb range check failed
-               if (Integer(Inst.LdrRs) + Integer(Inst.LdrOffs)) < 0 then
+               if Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs) < 0 then
                   return True;
-               elsif (Integer(Inst.LdrRs) + Integer(Inst.LdrOffs)) > 65535 then
+               elsif Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs) > 65535 then
                   return True;
                end if;
                Regs := DetectDoLdr(Inst.LdrRd,Inst.LdrRs,Inst.LdrOffs, Regs, Mem);
@@ -276,19 +288,24 @@ package body Machine with SPARK_Mode is
             when STR =>
                -- is Ra and Rb swapped? Ra = Rb, Rb = Ra
                -- raised CONSTRAINT_ERROR : machine.adb range check failed
-               if (Integer(Inst.StrRa) + Integer(Inst.StrOffs)) < 0 then
+               if Regs(Inst.StrRa) + DataVal(Inst.StrOffs) < 0 then
                   return True;
-               elsif (Integer(Inst.StrRa) + Integer(Inst.StrOffs)) > 65535 then
+               elsif Regs(Inst.StrRa) + DataVal(Inst.StrOffs) > 65535 then
                   return True;
                end if;
                Mem := DetectDoStr(Inst.StrRa,Inst.StrOffs,Inst.StrRb, Regs, Mem);
                PC := DetectIncPC(1, PC);
             when MOV =>
+               if Inst.MovOffs < -(2**31)then
+                  return True;
+               elsif Inst.MovOffs > (2**31 - 1) then
+                  return True;
+               end if;
                Regs := DetectDoMov(Inst.MovRd,Inst.MovOffs, Regs);
                PC := DetectIncPC(1, PC);
             when Instruction.RET =>
-               Result := Integer(Regs(Inst.RetRs));
-               Ret := Success;
+               -- Result := Integer(Regs(Inst.RetRs));
+               -- Ret := Success;
                return False;
             when JMP =>
                -- raised CONSTRAINT_ERROR : machine.adb range check failed
@@ -308,6 +325,11 @@ package body Machine with SPARK_Mode is
                   end if;
                   PC := DetectIncPC(Inst.JzOffs, PC);
                else
+                  if Integer(PC) + 1 < 0 then
+                     return True;
+                  elsif Integer(PC) + 1 > 65535 then
+                     return True;
+                  end if;
                   PC := DetectIncPC(1, PC);
                end if;
             when NOP =>
@@ -315,10 +337,10 @@ package body Machine with SPARK_Mode is
          end case;
          CycleCount := CycleCount + 1;
        end loop;
-       if Ret = Success then
+       -- if Ret = Success then
           -- Cycles instructions executed without a RET or invalid behaviour
-          Ret := CyclesExhausted;
-       end if;
+          -- Ret := CyclesExhausted;
+       -- end if;
       return True;
    end DetectInvalidBehaviour;
 
