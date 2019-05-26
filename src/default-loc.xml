@@ -2,99 +2,7 @@
 <Locations >
   <Project>
     <vfs_file>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_file>
-    <file_marker column=" 27" line=" 167" >
-      <vfs_project />
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 48" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 27" line=" 167" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 67" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 27" line=" 167" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 78" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 24" line=" 251" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 76" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 72" line=" 251" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 78" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 10" line=" 183" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 78" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 25" line=" 184" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 78" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 10" line=" 183" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 78" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 1" line=" 163" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 78" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 1" line=" 163" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 69" line=" 179" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 72" line=" 251" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 1" line=" 163" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 27" line=" 167" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 87" line=" 179" >
+    <file_marker column=" 31" line=" 151" >
       <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
       <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
     </file_marker>
@@ -102,119 +10,23 @@
       <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
       <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
     </file_marker>
-    <file_marker column=" 8" line=" 318" >
+    <file_marker column=" 1" line=" 123" >
       <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
       <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
     </file_marker>
-    <file_marker column=" 93" line=" 156" >
+    <file_marker column=" 36" line=" 248" >
       <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
       <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
     </file_marker>
-    <file_marker column=" 10" line=" 183" >
+    <file_marker column=" 44" line=" 174" >
       <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
       <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
     </file_marker>
-    <file_marker column=" 20" line=" 251" >
+    <file_marker column=" 36" line=" 248" >
       <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
       <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
     </file_marker>
-    <file_marker column=" 10" line=" 183" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 20" line=" 184" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 10" line=" 180" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 25" line=" 184" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 40" line=" 24" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 19" line=" 165" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 80" line=" 284" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 101" line=" 207" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 23" line=" 219" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 40" line=" 24" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 8" line=" 318" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 20" line=" 291" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 23" line=" 290" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 10" line=" 233" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 15" line=" 320" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 20" line=" 291" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 24" line=" 313" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 44" line=" 172" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 34" line=" 300" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 20" line=" 310" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 40" line=" 24" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 33" line=" 173" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 40" line=" 24" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker column=" 9" line=" 32" >
-      <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
-      <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
-    </file_marker>
-    <file_marker current="true" column=" 1" line=" 113" >
+    <file_marker current="true" column=" 1" line=" 254" >
       <vfs_project>I:\invalid-behaviour-conservative-analysis\src\default.gpr</vfs_project>
       <vfs_file>I:\invalid-behaviour-conservative-analysis\src\machine.adb</vfs_file>
     </file_marker>

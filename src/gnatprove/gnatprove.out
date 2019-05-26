@@ -62,7 +62,7 @@ in unit instruction, 1 subprograms and packages out of 33 analyzed
   Instruction.Random_Reg.Value at a-nudira.ads:67, instantiated at instruction.adb:8 skipped
 in unit machine, 19 subprograms and packages out of 19 analyzed
   Machine at machine.ads:4 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
-  Machine.DetectInvalidBehaviour at machine.ads:47 flow analyzed (0 errors, 0 checks and 2 warnings) and not proved, 66 checks out of 82 proved
+  Machine.DetectInvalidBehaviour at machine.ads:47 flow analyzed (0 errors, 0 checks and 1 warnings) and not proved, 66 checks out of 82 proved
   Machine.DetectInvalidBehaviour.DetectDoAdd at machine.adb:176 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
   Machine.DetectInvalidBehaviour.DetectDoDiv at machine.adb:197 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
   Machine.DetectInvalidBehaviour.DetectDoLdr at machine.adb:204 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
