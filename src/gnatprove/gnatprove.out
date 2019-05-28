@@ -6,21 +6,21 @@ SPARK Analysis results        Total         Flow   Interval   CodePeer       Pro
 -----------------------------------------------------------------------------------------------------------
 Data Dependencies                 .            .          .          .             .           .          .
 Flow Dependencies                 .            .          .          .             .           .          .
-Initialization                  417          417          .          .             .           .          .
+Initialization                  733          733          .          .             .           .          .
 Non-Aliasing                      .            .          .          .             .           .          .
-Run-time Checks                 163            .          .          .    163 (CVC4)           .          .
+Run-time Checks                 154            .          .          .    154 (CVC4)           .          .
 Assertions                        .            .          .          .             .           .          .
 Functional Contracts              1            .          .          .      1 (CVC4)           .          .
 LSP Verification                  .            .          .          .             .           .          .
 -----------------------------------------------------------------------------------------------------------
-Total                           581    417 (72%)          .          .     164 (28%)           .          .
+Total                           888    733 (83%)          .          .     155 (17%)           .          .
 
 
 Analyzed 1 unit
 in unit machine, 22 subprograms and packages out of 22 analyzed
   Machine at machine.ads:4 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
   Machine.DetectInvalidAdd at machine.adb:213 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
-  Machine.DetectInvalidBehaviour at machine.ads:47 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
+  Machine.DetectInvalidBehaviour at machine.ads:47 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (100 checks)
   Machine.DetectInvalidCycle at machine.adb:274 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
   Machine.DetectInvalidDiv at machine.adb:232 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
   Machine.DetectInvalidJmp at machine.adb:256 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
@@ -37,6 +37,6 @@ in unit machine, 22 subprograms and packages out of 22 analyzed
   Machine.DoMul at machine.adb:66 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
   Machine.DoStr at machine.adb:113 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
   Machine.DoSub at machine.adb:52 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
-  Machine.DynamicAnalysis at machine.adb:279 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (109 checks)
+  Machine.DynamicAnalysis at machine.adb:279 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)
   Machine.ExecuteProgram at machine.ads:35 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (55 checks)
   Machine.IncPC at machine.adb:24 flow analyzed (0 errors, 0 checks and 0 warnings) and proved (0 checks)

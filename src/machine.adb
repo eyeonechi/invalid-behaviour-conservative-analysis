@@ -276,122 +276,124 @@ package body Machine with SPARK_Mode is
       return not (CycleCount < Cycles);
    end DetectInvalidCycle;
    
-   function DynamicAnalysis(
-      Prog : in Program;
-      CycleCount : in Integer;
-      Cycles : in Integer;
-      PC : in ProgramCounter;
-      Regs : in Register;
-      Memory : in Mem
-   ) return Boolean is
+   function DynamicAnalysis(Prog : in Program; Cycles : in Integer) return Boolean is
+      CycleCount : Integer := 0;
       Inst : Instr;
-      NewPC : ProgramCounter := PC;
-      NewRegs : Register := Regs;
-      NewMemory : Mem := Memory;
+      PC : ProgramCounter := ProgramCounter'First;
+      Regs : Register := (others => 0);
+      Memory : Mem := (others => 0);
    begin
-      Inst := Prog(PC);
-      Put(Integer(PC)); Put(':'); Put(Ada.Characters.Latin_1.HT);
-      DebugPrintInstr(Inst);
-      New_Line;
-      return R : Boolean do
-         if DetectInvalidCycle(CycleCount, Cycles) then
-            R := True;
-         else
+      return R : Boolean := True do
+         while (CycleCount < Cycles) loop
+            Inst := Prog(PC);
+            Put(Integer(PC)); Put(':'); Put(Ada.Characters.Latin_1.HT);
+            DebugPrintInstr(Inst);
+            New_Line;
             case Inst.Op is
                when ADD =>
                   R := DetectInvalidAdd(Inst, Regs);
                   if R = False then
-                     NewRegs(Inst.AddRd) := Regs(Inst.AddRs1) + Regs(Inst.AddRs2);
+                     Regs(Inst.AddRd) := Regs(Inst.AddRs1) + Regs(Inst.AddRs2);
                      if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        NewPC := ProgramCounter(Integer(PC) + Integer(1));
+                        PC := ProgramCounter(Integer(PC) + Integer(1));
                      end if;
-                     R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
+                  else
+                     exit;
                   end if;
                when SUB =>
                   R := DetectInvalidSub(Inst, Regs);
                   if R = False then
-                     NewRegs(Inst.SubRd) := Regs(Inst.SubRs1) - Regs(Inst.SubRs2);
+                     Regs(Inst.SubRd) := Regs(Inst.SubRs1) - Regs(Inst.SubRs2);
                      if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        NewPC := ProgramCounter(Integer(PC) + Integer(1));
+                        PC := ProgramCounter(Integer(PC) + Integer(1));
                      end if;
-                     R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
+                  else
+                     exit;
                   end if;
                when MUL =>
                   R := DetectInvalidMul(Inst, Regs);
                   if R = False then
-                     NewRegs(Inst.MulRd) := Regs(Inst.MulRs1) * Regs(Inst.MulRs2);
+                     Regs(Inst.MulRd) := Regs(Inst.MulRs1) * Regs(Inst.MulRs2);
                      if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        NewPC := ProgramCounter(Integer(PC) + Integer(1));
+                        PC := ProgramCounter(Integer(PC) + Integer(1));
                      end if;
-                     R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
+                  else
+                     exit;
                   end if;
                when DIV =>
                   R := DetectInvalidDiv(Inst, Regs);
                   if R = False then
-                     NewRegs(Inst.DivRd) := Regs(Inst.DivRs1) / Regs(Inst.DivRs2);
+                     Regs(Inst.DivRd) := Regs(Inst.DivRs1) / Regs(Inst.DivRs2);
                      if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        NewPC := ProgramCounter(Integer(PC) + Integer(1));
+                        PC := ProgramCounter(Integer(PC) + Integer(1));
                      end if;
-                     R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
+                  else
+                     exit;
                   end if;
                when LDR =>
                   R := DetectInvalidLdr(Inst, Regs);
                   if R = False then
-                     NewRegs(Inst.LdrRd) := Memory(Addr(Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs)));
+                     Regs(Inst.LdrRd) := Memory(Addr(Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs)));
                      if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        NewPC := ProgramCounter(Integer(PC) + Integer(1));
+                        PC := ProgramCounter(Integer(PC) + Integer(1));
                      end if;
-                     R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
+                  else
+                     exit;
                   end if;
                when STR =>
                   R := DetectInvalidStr(Inst, Regs);
                   if R = False then
-                     NewMemory(Addr(Regs(Inst.StrRa) + DataVal(Inst.StrOffs))) := Regs(Inst.StrRb);
+                     Memory(Addr(Regs(Inst.StrRa) + DataVal(Inst.StrOffs))) := Regs(Inst.StrRb);
                      if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        NewPC := ProgramCounter(Integer(PC) + Integer(1));
+                        PC := ProgramCounter(Integer(PC) + Integer(1));
                      end if;
-                     R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
+                  else
+                     exit;
                   end if;
                when MOV =>
                   R := DetectInvalidMov(Inst);
                   if R = False then
-                     NewRegs(Inst.MovRd) := DataVal(Inst.MovOffs);
+                     Regs(Inst.MovRd) := DataVal(Inst.MovOffs);
                      if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        NewPC := ProgramCounter(Integer(PC) + Integer(1));
+                        PC := ProgramCounter(Integer(PC) + Integer(1));
                      end if;
-                     R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
+                  else
+                     exit;
                   end if;
                when Instruction.RET =>
-                  R := False;
+                  R := DetectInvalidCycle(CycleCount, Cycles);
+                  exit;
                when JMP =>
                   R := DetectInvalidJmp(Inst, PC);
                   if R = False then
                      if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Inst.JmpOffs)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(Inst.JmpOffs)) then
-                        NewPC := ProgramCounter(Integer(PC) + Integer(Inst.JmpOffs));
+                        PC := ProgramCounter(Integer(PC) + Integer(Inst.JmpOffs));
                      end if;
-                     R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
+                  else
+                     exit;
                   end if;
                when JZ =>
                   R := DetectInvalidJz(Inst, PC, Regs);
                   if R = False then
                      if Regs(Inst.JzRa) = 0 then
                         if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Inst.JzOffs)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(Inst.JzOffs)) then
-                           NewPC := ProgramCounter(Integer(PC) + Integer(Inst.JzOffs));
+                           PC := ProgramCounter(Integer(PC) + Integer(Inst.JzOffs));
                         end if;
                      else
                         if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                           NewPC := ProgramCounter(Integer(PC) + Integer(1));
+                           PC := ProgramCounter(Integer(PC) + Integer(1));
                         end if;
                      end if;
-                     R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
+                  else
+                     exit;
                   end if;
                when NOP =>
                   if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and ( Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                     NewPC := ProgramCounter(Integer(PC) + Integer(1));
+                     PC := ProgramCounter(Integer(PC) + Integer(1));
                   end if;
-                  R := DynamicAnalysis(Prog, CycleCount + 1, Cycles, NewPC, NewRegs, NewMemory);
             end case;
-         end if;
+            CycleCount := CycleCount + 1;
+         end loop;
       end return;
    end DynamicAnalysis;
 
@@ -399,13 +401,8 @@ package body Machine with SPARK_Mode is
       Prog : in Program;
       Cycles : in Integer
    ) return Boolean is
-      CycleCount : Integer := 0;
-      Inst : Instr;
-      PC : ProgramCounter := ProgramCounter'First;
-      Regs : Register := (others => 0);
-      Memory : Mem := (others => 0);
-   begin
-      return DynamicAnalysis(Prog, CycleCount, Cycles, PC, Regs, Memory);
+   begin     
+      return DynamicAnalysis(Prog, Cycles);
    end DetectInvalidBehaviour;
    
 end Machine;
