@@ -1,11 +1,13 @@
 with Instruction;
 use Instruction;
-with Debug; use Debug;
+with Debug;
+use Debug;
 
 -- used so we can print TAB character
 with Ada.Characters.Latin_1;
 
 package body Machine with SPARK_Mode is
+   
    -- data values are 32-bit integers
    -- this is the type of words used in the virtual machine
    type DataVal is range -(2**31) .. +(2**31 - 1);
@@ -13,21 +15,14 @@ package body Machine with SPARK_Mode is
    subtype UninitializedDataVal is DataVal;
    -- initialized data value in virtual machine
    subtype InitializedDataVal is DataVal;
+   
    -- initialise register as array of uninitialised values
    type Register is array (Reg) of UninitializedDataVal;
+   
    -- initialise memory as array of uninitialised values
    type Memory is array (Addr) of UninitializedDataVal;
-      
-   -- the registers
-   Regs : array (Reg) of DataVal := (others => 0);
-   
-   -- the Mem
-   Mem : array (Addr) of DataVal := (others => 0);
-   
-   -- the program counter
-   PC : ProgramCounter := ProgramCounter'First;
-      
-   procedure IncPC(Ret :in out ReturnCode; Offs : in Offset) is
+
+   procedure IncPC(Ret :in out ReturnCode; Offs : in Offset; PC : in out ProgramCounter) is
    begin
       if Ret = Success then
          if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Offs)) and
@@ -40,11 +35,10 @@ package body Machine with SPARK_Mode is
       end if;
    end IncPC;
    
-   procedure DoAdd(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode) is
+   procedure DoAdd(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode; Regs : in out Register) is
    begin
-      if (Regs(Rs2) > 0 and then Regs(Rs1) > DataVal'Last - Regs(Rs2)) then
-         Ret := IllegalProgram;
-      elsif (Regs(Rs2) < 0 and then Regs(Rs1) < DataVal'First - Regs(Rs2)) then
+      if (Regs(Rs2) > 0 and then Regs(Rs1) > DataVal'Last - Regs(Rs2)) or
+         (Regs(Rs2) < 0 and then Regs(Rs1) < DataVal'First - Regs(Rs2)) then
          Ret := IllegalProgram;
       else
          Regs(Rd) := Regs(Rs1) + Regs(Rs2);
@@ -52,10 +46,10 @@ package body Machine with SPARK_Mode is
       end if;
    end DoAdd;
    
-   procedure DoSub(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode) is
+   procedure DoSub(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode; Regs : in out Register) is
    begin
       if (Regs(Rs2) < 0 and then Regs(Rs1) > DataVal'Last + Regs(Rs2)) or
-          (Regs(Rs2) > 0 and then Regs(Rs1) < DataVal'First + Regs(Rs2)) then
+         (Regs(Rs2) > 0 and then Regs(Rs1) < DataVal'First + Regs(Rs2)) then
          Ret := IllegalProgram;
       else
          Regs(Rd) := Regs(Rs1) - Regs(Rs2);
@@ -63,13 +57,11 @@ package body Machine with SPARK_Mode is
       end if;
    end DoSub;
    
-   procedure DoMul(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode) is
+   procedure DoMul(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode; Regs : in out Register) is
    begin
-      if (Regs(Rs1) < 0 and then Regs(Rs2) < 0 and then Regs(Rs1) < DataVal'Last / Regs(Rs2)) then
-         Ret := IllegalProgram;
-      elsif (Regs(Rs1) < 0 and then Regs(Rs2) > 0 and then DataVal'First / Regs(Rs2) > Regs(Rs1)) then
-         Ret := IllegalProgram;
-      elsif (Regs(Rs2) /= 0 and then Regs(Rs1) > 0 and then Regs(Rs1) > DataVal'Last / Regs(Rs2)) then
+      if (Regs(Rs1) < 0 and then Regs(Rs2) < 0 and then Regs(Rs1) < DataVal'Last / Regs(Rs2)) or
+         (Regs(Rs1) < 0 and then Regs(Rs2) > 0 and then DataVal'First / Regs(Rs2) > Regs(Rs1)) or
+         (Regs(Rs2) /= 0 and then Regs(Rs1) > 0 and then Regs(Rs1) > DataVal'Last / Regs(Rs2)) then
          Ret := IllegalProgram;
       else
         Regs(Rd) := Regs(Rs1) * Regs(Rs2);
@@ -77,7 +69,7 @@ package body Machine with SPARK_Mode is
       end if;
    end DoMul;
    
-   procedure DoDiv(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode) is
+   procedure DoDiv(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode; Regs : in out Register) is
    begin
       if Regs(Rs2) = 0 or (Regs(Rs1) = DataVal'First and Regs(Rs2) = -1) then
          Ret := IllegalProgram;
@@ -87,11 +79,10 @@ package body Machine with SPARK_Mode is
       end if;
    end DoDiv;
    
-   procedure DoLdr(Rd : in Reg; Rs : in Reg; Offs : in Offset; Ret : out ReturnCode) is
+   procedure DoLdr(Rd : in Reg; Rs : in Reg; Offs : in Offset; Ret : out ReturnCode; Regs : in out Register; Mem : in Memory) is
    begin
-      if (Integer(Regs (Rs))  > Integer(Addr'Last) - Integer(Offs)) then
-         Ret := IllegalProgram;
-      elsif (Integer(Regs (Rs)) < Integer(Addr'First) - Integer(Offs)) then
+      if (Integer(Regs (Rs))  > Integer(Addr'Last) - Integer(Offs)) or
+         (Integer(Regs (Rs)) < Integer(Addr'First) - Integer(Offs)) then
          Ret := IllegalProgram;
       else
          Regs(Rd) := Mem(Addr(Regs(Rs) + DataVal(Offs)));
@@ -99,11 +90,10 @@ package body Machine with SPARK_Mode is
       end if;
    end DoLdr;
    
-   procedure DoStr(Ra : in Reg; Offs : in Offset; Rb : in Reg; Ret : out ReturnCode) is
+   procedure DoStr(Ra : in Reg; Offs : in Offset; Rb : in Reg; Ret : out ReturnCode; Regs : in Register; Mem : in out Memory) is
    begin
-      if (Integer(Regs (Ra) ) > Integer(Addr'Last) - Integer(Offs)) then
-         Ret := IllegalProgram;
-      elsif  (Integer(Regs (Ra)) < Integer(Addr'First) - Integer(Offs)) then
+      if (Integer(Regs (Ra) ) > Integer(Addr'Last) - Integer(Offs)) or
+         (Integer(Regs (Ra)) < Integer(Addr'First) - Integer(Offs)) then
          Ret := IllegalProgram;
       else
          Mem(Addr(Regs(Ra) + DataVal(Offs))) := Regs(Rb);
@@ -111,7 +101,7 @@ package body Machine with SPARK_Mode is
       end if;
    end DoStr;
    
-   procedure DoMov(Rd : in Reg; Offs : in Offset; Ret : out ReturnCode) with
+   procedure DoMov(Rd : in Reg; Offs : in Offset; Ret : out ReturnCode; Regs : in out Register) with
       Pre => Integer(Offs) >= Integer(DataVal'First) and then Integer(Offs) <= Integer(DataVal'Last) is
    begin
       Regs(Rd) := DataVal(Offs);
@@ -121,9 +111,14 @@ package body Machine with SPARK_Mode is
    procedure ExecuteProgram(Prog : in Program; Cycles : in Integer; Ret : out ReturnCode; Result : out Integer) is
       CycleCount : Integer := 0;
       Inst : Instr;
+      -- the registers
+      Regs : Register := (others => 0);
+      -- the memory
+      Mem : Memory := (others => 0);
+      -- the program counter
+      PC : ProgramCounter := ProgramCounter'First;
    begin
       Ret := Success;
-      PC := ProgramCounter'First;
       Result := 0;
       while (CycleCount < Cycles and Ret = Success) loop
          Inst := Prog(PC);
@@ -135,40 +130,40 @@ package body Machine with SPARK_Mode is
          
          case Inst.Op is
             when ADD =>
-               DoAdd(Inst.AddRd,Inst.AddRs1,Inst.AddRs2,Ret);
-               IncPC(Ret,1);
+               DoAdd(Inst.AddRd, Inst.AddRs1, Inst.AddRs2, Ret, Regs);
+               IncPC(Ret, 1, PC);
             when SUB =>
-               DoSub(Inst.SubRd,Inst.SubRs1,Inst.SubRs2,Ret);
-               IncPC(Ret,1);
+               DoSub(Inst.SubRd, Inst.SubRs1, Inst.SubRs2, Ret, Regs);
+               IncPC(Ret, 1, PC);
             when MUL =>
-               DoMul(Inst.MulRd,Inst.MulRs1,Inst.MulRs2,Ret);
-               IncPC(Ret,1);
+               DoMul(Inst.MulRd, Inst.MulRs1, Inst.MulRs2, Ret, Regs);
+               IncPC(Ret, 1, PC);
             when DIV =>
-               DoDiv(Inst.DivRd,Inst.DivRs1,Inst.DivRs2,Ret);
-               IncPC(Ret,1);
+               DoDiv(Inst.DivRd, Inst.DivRs1, Inst.DivRs2, Ret, Regs);
+               IncPC(Ret, 1, PC);
             when LDR =>
-               DoLdr(Inst.LdrRd,Inst.LdrRs,Inst.LdrOffs,Ret);
-               IncPC(Ret,1);
+               DoLdr(Inst.LdrRd, Inst.LdrRs, Inst.LdrOffs, Ret, Regs, Mem);
+               IncPC(Ret, 1, PC);
             when STR =>
-               DoStr(Inst.StrRa,Inst.StrOffs,Inst.StrRb,Ret);
-               IncPC(Ret,1);
+               DoStr(Inst.StrRa, Inst.StrOffs, Inst.StrRb, Ret, Regs, Mem);
+               IncPC(Ret, 1, PC);
             when MOV =>
-               DoMov(Inst.MovRd,Inst.MovOffs,Ret);
-               IncPC(Ret,1);
+               DoMov(Inst.MovRd, Inst.MovOffs, Ret, Regs);
+               IncPC(Ret, 1, PC);
             when Instruction.RET =>
                Result := Integer(Regs(Inst.RetRs));
                Ret := Success;
                return;
             when JMP =>
-               IncPC(Ret,Inst.JmpOffs);
+               IncPC(Ret, Inst.JmpOffs, PC);
             when JZ =>
                if Regs(Inst.JzRa) = 0 then
-                  IncPC(Ret,Inst.JzOffs);
+                  IncPC(Ret, Inst.JzOffs, PC);
                else
-                  IncPc(Ret,1);
+                  IncPC(Ret, 1, PC);
                end if;
             when NOP =>
-               IncPC(Ret,1);
+               IncPC(Ret, 1, PC);
          end case;
          CycleCount := CycleCount + 1;
       end loop;
