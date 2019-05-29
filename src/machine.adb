@@ -201,15 +201,6 @@ package body Machine with SPARK_Mode is
       end if;
    end ExecuteProgram;
 
-
---     procedure IncPC(PC : in out ProgramCounter; Offs : in Offset) is 
---     begin
---           if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Offs)) 
---             and ( Integer(PC) >= Integer(ProgramCounter'First) - Integer(Offs)) then
---              PC := ProgramCounter(Integer(PC) + Integer(Offs));
---           end if;
---     end IncPC;
-
    function DetectInvalidAdd(Inst : in Instr; Regs: in Register) return Boolean is
    begin
       return (Regs(Inst.AddRs2) > 0 and then Regs(Inst.AddRs1) > DataVal'Last - Regs(Inst.AddRs2)) or
@@ -276,125 +267,168 @@ package body Machine with SPARK_Mode is
       return not (CycleCount < Cycles);
    end DetectInvalidCycle;
    
+   function DetectInvalidPC(PC : in ProgramCounter; Offs : in Offset) return Boolean is
+   begin
+      return (Integer(PC) > Integer(ProgramCounter'Last) - Integer(Offs)) or
+             (Integer(PC) < Integer(ProgramCounter'First) - Integer(Offs));
+   end DetectInvalidPC;
+   
+   procedure PerformAdd(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidAdd(Inst, Regs) then
+         Regs(Inst.AddRd) := Regs(Inst.AddRs1) + Regs(Inst.AddRs2);
+         if not DetectInvalidPC(PC, 1) then
+            PC := ProgramCounter(Integer(PC) + Integer(1));
+            Ret := False;
+         end if;
+      end if;
+   end PerformAdd;
+   
+   procedure PerformSub(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidSub(Inst, Regs) then
+         Regs(Inst.SubRd) := Regs(Inst.SubRs1) - Regs(Inst.SubRs2);
+         if not DetectInvalidPC(PC, 1) then
+            PC := ProgramCounter(Integer(PC) + Integer(1));
+            Ret := False;
+         end if;
+      end if;
+   end PerformSub;
+   
+   procedure PerformMul(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidMul(Inst, Regs) then
+         Regs(Inst.MulRd) := Regs(Inst.MulRs1) * Regs(Inst.MulRs2);
+         if not DetectInvalidPC(PC, 1) then
+            PC := ProgramCounter(Integer(PC) + Integer(1));
+            Ret := False;
+         end if;
+      end if;
+   end PerformMul;
+   
+   procedure PerformDiv(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidDiv(Inst, Regs) then
+         Regs(Inst.DivRd) := Regs(Inst.DivRs1) / Regs(Inst.DivRs2);
+         if not DetectInvalidPC(PC, 1) then
+            PC := ProgramCounter(Integer(PC) + Integer(1));
+            Ret := False;
+         end if;
+      end if;
+   end PerformDiv;
+   
+   procedure PerformLdr(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Memory : in Mem; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidLdr(Inst, Regs) then
+         Regs(Inst.LdrRd) := Memory(Addr(Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs)));
+         if not DetectInvalidPC(PC, 1) then
+            PC := ProgramCounter(Integer(PC) + Integer(1));
+            Ret := False;
+         end if;
+      end if;
+   end PerformLdr;
+   
+   procedure PerformStr(Inst : in Instr; PC : in out ProgramCounter; Regs : in Register; Memory : in out Mem; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidStr(Inst, Regs) then
+         Memory(Addr(Regs(Inst.StrRa) + DataVal(Inst.StrOffs))) := Regs(Inst.StrRb);
+         if not DetectInvalidPC(PC, 1) then
+            PC := ProgramCounter(Integer(PC) + Integer(1));
+            Ret := False;
+         end if;
+      end if;
+   end PerformStr;
+   
+   procedure PerformMov(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidMov(Inst) then
+         Regs(Inst.MovRd) := DataVal(Inst.MovOffs);
+         if not DetectInvalidPC(PC, 1) then
+            PC := ProgramCounter(Integer(PC) + Integer(1));
+            Ret := False;
+         end if;
+      end if;
+   end PerformMov;
+   
+   procedure PerformJmp(Inst : in Instr; PC : in out ProgramCounter; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidJmp(Inst, PC) then
+         if not DetectInvalidPC(PC, Inst.JmpOffs) then
+            PC := ProgramCounter(Integer(PC) + Integer(Inst.JmpOffs));
+            Ret := False;
+         end if;
+      end if; 
+   end PerformJmp;
+   
+   procedure PerformJz(Inst : in Instr; PC : in out ProgramCounter; Regs : in Register; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidJz(Inst, PC, Regs) then
+         if Regs(Inst.JzRa) = 0 then
+            if not DetectInvalidPC(PC, Inst.JzOffs) then
+               PC := ProgramCounter(Integer(PC) + Integer(Inst.JzOffs));
+               Ret := False;
+            end if;
+         else
+            if not DetectInvalidPC(PC, 1) then
+               PC := ProgramCounter(Integer(PC) + Integer(1));
+               Ret := False;
+            end if;
+         end if;
+      end if;
+   end PerformJz;
+   
+   procedure PerformNop(PC : in out ProgramCounter) is
+   begin
+      if not DetectInvalidPC(PC, 1) then
+         PC := ProgramCounter(Integer(PC) + Integer(1));
+      end if;
+   end PerformNop;
+   
    function DynamicAnalysis(Prog : in Program; Cycles : in Integer) return Boolean is
       CycleCount : Integer := 0;
       Inst : Instr;
       PC : ProgramCounter := ProgramCounter'First;
       Regs : Register := (others => 0);
       Memory : Mem := (others => 0);
+      R : Boolean := True;
    begin
-      return R : Boolean := True do
-         while (CycleCount < Cycles) loop
-            Inst := Prog(PC);
-            Put(Integer(PC)); Put(':'); Put(Ada.Characters.Latin_1.HT);
-            DebugPrintInstr(Inst);
-            New_Line;
-            case Inst.Op is
-               when ADD =>
-                  R := DetectInvalidAdd(Inst, Regs);
-                  if R = False then
-                     Regs(Inst.AddRd) := Regs(Inst.AddRs1) + Regs(Inst.AddRs2);
-                     if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        PC := ProgramCounter(Integer(PC) + Integer(1));
-                     end if;
-                  else
-                     exit;
-                  end if;
-               when SUB =>
-                  R := DetectInvalidSub(Inst, Regs);
-                  if R = False then
-                     Regs(Inst.SubRd) := Regs(Inst.SubRs1) - Regs(Inst.SubRs2);
-                     if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        PC := ProgramCounter(Integer(PC) + Integer(1));
-                     end if;
-                  else
-                     exit;
-                  end if;
-               when MUL =>
-                  R := DetectInvalidMul(Inst, Regs);
-                  if R = False then
-                     Regs(Inst.MulRd) := Regs(Inst.MulRs1) * Regs(Inst.MulRs2);
-                     if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        PC := ProgramCounter(Integer(PC) + Integer(1));
-                     end if;
-                  else
-                     exit;
-                  end if;
-               when DIV =>
-                  R := DetectInvalidDiv(Inst, Regs);
-                  if R = False then
-                     Regs(Inst.DivRd) := Regs(Inst.DivRs1) / Regs(Inst.DivRs2);
-                     if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        PC := ProgramCounter(Integer(PC) + Integer(1));
-                     end if;
-                  else
-                     exit;
-                  end if;
-               when LDR =>
-                  R := DetectInvalidLdr(Inst, Regs);
-                  if R = False then
-                     Regs(Inst.LdrRd) := Memory(Addr(Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs)));
-                     if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        PC := ProgramCounter(Integer(PC) + Integer(1));
-                     end if;
-                  else
-                     exit;
-                  end if;
-               when STR =>
-                  R := DetectInvalidStr(Inst, Regs);
-                  if R = False then
-                     Memory(Addr(Regs(Inst.StrRa) + DataVal(Inst.StrOffs))) := Regs(Inst.StrRb);
-                     if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        PC := ProgramCounter(Integer(PC) + Integer(1));
-                     end if;
-                  else
-                     exit;
-                  end if;
-               when MOV =>
-                  R := DetectInvalidMov(Inst);
-                  if R = False then
-                     Regs(Inst.MovRd) := DataVal(Inst.MovOffs);
-                     if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                        PC := ProgramCounter(Integer(PC) + Integer(1));
-                     end if;
-                  else
-                     exit;
-                  end if;
-               when Instruction.RET =>
-                  R := DetectInvalidCycle(CycleCount, Cycles);
-                  exit;
-               when JMP =>
-                  R := DetectInvalidJmp(Inst, PC);
-                  if R = False then
-                     if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Inst.JmpOffs)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(Inst.JmpOffs)) then
-                        PC := ProgramCounter(Integer(PC) + Integer(Inst.JmpOffs));
-                     end if;
-                  else
-                     exit;
-                  end if;
-               when JZ =>
-                  R := DetectInvalidJz(Inst, PC, Regs);
-                  if R = False then
-                     if Regs(Inst.JzRa) = 0 then
-                        if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Inst.JzOffs)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(Inst.JzOffs)) then
-                           PC := ProgramCounter(Integer(PC) + Integer(Inst.JzOffs));
-                        end if;
-                     else
-                        if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and (Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                           PC := ProgramCounter(Integer(PC) + Integer(1));
-                        end if;
-                     end if;
-                  else
-                     exit;
-                  end if;
-               when NOP =>
-                  if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(1)) and ( Integer(PC) >= Integer(ProgramCounter'First) - Integer(1)) then
-                     PC := ProgramCounter(Integer(PC) + Integer(1));
-                  end if;
-            end case;
-            CycleCount := CycleCount + 1;
-         end loop;
-      end return;
+      while (CycleCount < Cycles) loop
+         Inst := Prog(PC);
+         Put(Integer(PC)); Put(':'); Put(Ada.Characters.Latin_1.HT);
+         DebugPrintInstr(Inst);
+         New_Line;
+         R := True;
+         case Inst.Op is
+            when ADD =>
+               PerformAdd(Inst, PC, Regs, R);
+            when SUB =>
+               PerformSub(Inst, PC, Regs, R);
+            when MUL =>
+               PerformMul(Inst, PC, Regs, R);
+            when DIV =>
+               PerformDiv(Inst, PC, Regs, R);
+            when LDR =>
+               PerformLdr(Inst, PC, Regs, Memory, R);
+            when STR =>
+               PerformStr(Inst, PC, Regs, Memory, R);
+            when MOV =>
+               PerformMov(Inst, PC, Regs, R);
+            when Instruction.RET =>
+               R := DetectInvalidCycle(CycleCount, Cycles);
+               exit;
+            when JMP =>
+               PerformJmp(Inst, PC, R);
+            when JZ =>
+               PerformJz(Inst, PC, Regs, R);
+            when NOP =>
+               PerformNop(PC);
+         end case;
+         CycleCount := CycleCount + 1;
+         if R = True then
+            exit;
+         end if;
+      end loop;
+      return R;
    end DynamicAnalysis;
 
    function DetectInvalidBehaviour(
