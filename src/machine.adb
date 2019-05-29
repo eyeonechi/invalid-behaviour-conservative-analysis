@@ -9,23 +9,29 @@ package body Machine with SPARK_Mode is
    -- data values are 32-bit integers
    -- this is the type of words used in the virtual machine
    type DataVal is range -(2**31) .. +(2**31 - 1);
-   type Register is array (Reg) of DataVal;
-   type Mem is array (Addr) of DataVal;
+   -- uninitialized data value in virtual machine
+   subtype UninitializedDataVal is DataVal;
+   -- initialized data value in virtual machine
+   subtype InitializedDataVal is DataVal;
+   -- initialise register as array of uninitialised values
+   type Register is array (Reg) of UninitializedDataVal;
+   -- initialise memory as array of uninitialised values
+   type Memory is array (Addr) of UninitializedDataVal;
       
    -- the registers
    Regs : array (Reg) of DataVal := (others => 0);
    
-   -- the memory
-   Memory : array (Addr) of DataVal := (others => 0);
+   -- the Mem
+   Mem : array (Addr) of DataVal := (others => 0);
    
    -- the program counter
    PC : ProgramCounter := ProgramCounter'First;
       
-   procedure IncPC(Ret :in out ReturnCode; Offs : in Offset) is 
+   procedure IncPC(Ret :in out ReturnCode; Offs : in Offset) is
    begin
       if Ret = Success then
-         if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Offs)) 
-           and ( Integer(PC) >= Integer(ProgramCounter'First) - Integer(Offs)) then
+         if (Integer(PC) <= Integer(ProgramCounter'Last) - Integer(Offs)) and
+            (Integer(PC) >= Integer(ProgramCounter'First) - Integer(Offs)) then
             PC := ProgramCounter(Integer(PC) + Integer(Offs));
             Ret := Success;
          else
@@ -34,10 +40,7 @@ package body Machine with SPARK_Mode is
       end if;
    end IncPC;
    
-   procedure DoAdd(Rd : in Reg; 
-                   Rs1 : in Reg; 
-                   Rs2 : in Reg;
-                   Ret : out ReturnCode) is
+   procedure DoAdd(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode) is
    begin
       if (Regs(Rs2) > 0 and then Regs(Rs1) > DataVal'Last - Regs(Rs2)) then
          Ret := IllegalProgram;
@@ -49,24 +52,18 @@ package body Machine with SPARK_Mode is
       end if;
    end DoAdd;
    
-   procedure DoSub(Rd : in Reg; 
-                   Rs1 : in Reg; 
-                   Rs2 : in Reg;
-                   Ret : out ReturnCode) is
+   procedure DoSub(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode) is
    begin
       if (Regs(Rs2) < 0 and then Regs(Rs1) > DataVal'Last + Regs(Rs2)) or
           (Regs(Rs2) > 0 and then Regs(Rs1) < DataVal'First + Regs(Rs2)) then
          Ret := IllegalProgram;
-      else 
+      else
          Regs(Rd) := Regs(Rs1) - Regs(Rs2);
          Ret := Success;
       end if;
    end DoSub;
    
-   procedure DoMul(Rd : in Reg; 
-                   Rs1 : in Reg; 
-                   Rs2 : in Reg;
-                   Ret : out ReturnCode) is
+   procedure DoMul(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode) is
    begin
       if (Regs(Rs1) < 0 and then Regs(Rs2) < 0 and then Regs(Rs1) < DataVal'Last / Regs(Rs2)) then
          Ret := IllegalProgram;
@@ -80,10 +77,7 @@ package body Machine with SPARK_Mode is
       end if;
    end DoMul;
    
-   procedure DoDiv(Rd : in Reg; 
-                   Rs1 : in Reg; 
-                   Rs2 : in Reg;
-                   Ret : out ReturnCode) is
+   procedure DoDiv(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode) is
    begin
       if Regs(Rs2) = 0 or (Regs(Rs1) = DataVal'First and Regs(Rs2) = -1) then
          Ret := IllegalProgram;
@@ -93,55 +87,38 @@ package body Machine with SPARK_Mode is
       end if;
    end DoDiv;
    
-   procedure DoLdr(Rd : in Reg; 
-                   Rs : in Reg; 
-                   Offs : in Offset;
-                   Ret : out ReturnCode) is
-   A : Addr;
+   procedure DoLdr(Rd : in Reg; Rs : in Reg; Offs : in Offset; Ret : out ReturnCode) is
    begin
       if (Integer(Regs (Rs))  > Integer(Addr'Last) - Integer(Offs)) then
          Ret := IllegalProgram;
       elsif (Integer(Regs (Rs)) < Integer(Addr'First) - Integer(Offs)) then
-         Ret := IllegalProgram;  
-      else 
-         A := Addr(Regs(Rs) + DataVal(Offs));
-         Regs(Rd) := Memory(A);
+         Ret := IllegalProgram;
+      else
+         Regs(Rd) := Mem(Addr(Regs(Rs) + DataVal(Offs)));
          Ret := Success;
       end if;
    end DoLdr;
    
-   procedure DoStr(Ra : in Reg;
-                   Offs : in Offset;
-                   Rb : in Reg;
-                   Ret : out ReturnCode) is 
-   A : Addr;
+   procedure DoStr(Ra : in Reg; Offs : in Offset; Rb : in Reg; Ret : out ReturnCode) is
    begin
       if (Integer(Regs (Ra) ) > Integer(Addr'Last) - Integer(Offs)) then
          Ret := IllegalProgram;
       elsif  (Integer(Regs (Ra)) < Integer(Addr'First) - Integer(Offs)) then
-         Ret := IllegalProgram;  
-      else 
-         A := Addr(Regs(Ra) + DataVal(Offs));   
-         Memory(A) := Regs(Rb);
+         Ret := IllegalProgram;
+      else
+         Mem(Addr(Regs(Ra) + DataVal(Offs))) := Regs(Rb);
          Ret := Success;
       end if;
    end DoStr;
    
-   procedure DoMov(Rd : in Reg;
-                   Offs : in Offset;
-                   Ret : out ReturnCode) with
-   Pre => Integer(Offs) >= Integer(DataVal'First) and then Integer(Offs) <= Integer(DataVal'Last)
-   is
+   procedure DoMov(Rd : in Reg; Offs : in Offset; Ret : out ReturnCode) with
+      Pre => Integer(Offs) >= Integer(DataVal'First) and then Integer(Offs) <= Integer(DataVal'Last) is
    begin
       Regs(Rd) := DataVal(Offs);
       Ret := Success;
    end DoMov;
    
-   procedure ExecuteProgram(Prog : in Program;
-                            Cycles : in Integer;
-                            Ret : out ReturnCode;
-                            Result : out Integer) 
-   is
+   procedure ExecuteProgram(Prog : in Program; Cycles : in Integer; Ret : out ReturnCode; Result : out Integer) is
       CycleCount : Integer := 0;
       Inst : Instr;
    begin
@@ -200,41 +177,56 @@ package body Machine with SPARK_Mode is
          Ret := CyclesExhausted;
       end if;
    end ExecuteProgram;
+   
+   function DetectUninitializedVariable(Val : in DataVal) return Boolean is
+   begin
+      return Val in UninitializedDataVal;
+   end DetectUninitializedVariable;
 
    function DetectInvalidAdd(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (Regs(Inst.AddRs2) > 0 and then Regs(Inst.AddRs1) > DataVal'Last - Regs(Inst.AddRs2)) or
+      return (DetectUninitializedVariable(Regs(Inst.AddRs1))) or
+             (DetectUninitializedVariable(Regs(Inst.AddRs2))) or
+             (Regs(Inst.AddRs2) > 0 and then Regs(Inst.AddRs1) > DataVal'Last - Regs(Inst.AddRs2)) or
              (Regs(Inst.AddRs2) < 0 and then Regs(Inst.AddRs1) < DataVal'First - Regs(Inst.AddRs2));
    end DetectInvalidAdd;
    
    function DetectInvalidSub(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (Regs(Inst.SubRs2) < 0 and then (Regs(Inst.SubRs1) > DataVal'Last +  Regs(Inst.SubRs2))) or
+      return (DetectUninitializedVariable(Regs(Inst.SubRs1))) or
+             (DetectUninitializedVariable(Regs(Inst.SubRs2))) or
+             (Regs(Inst.SubRs2) < 0 and then (Regs(Inst.SubRs1) > DataVal'Last +  Regs(Inst.SubRs2))) or
              (Regs(Inst.SubRs2) > 0 and then (Regs(Inst.SubRs1) < DataVal'First + Regs(Inst.SubRs2)));
    end DetectInvalidSub;
    
    function DetectInvalidMul(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (Regs(Inst.MulRs1) < 0 and then Regs(Inst.MulRs2) < 0 and then Regs(Inst.MulRs1) < DataVal'Last / Regs(Inst.MulRs2)) or
+      return (DetectUninitializedVariable(Regs(Inst.MulRs1))) or
+             (DetectUninitializedVariable(Regs(Inst.MulRs2))) or
+             (Regs(Inst.MulRs1) < 0 and then Regs(Inst.MulRs2) < 0 and then Regs(Inst.MulRs1) < DataVal'Last / Regs(Inst.MulRs2)) or
              (Regs(Inst.MulRs1) < 0 and then Regs(Inst.MulRs2) > 0 and then Regs(Inst.MulRs1) < DataVal'First / Regs(Inst.MulRs2)) or
              (Regs(Inst.MulRs2) /= 0 and then Regs(Inst.MulRs1) > 0 and then Regs(Inst.MulRs1) > DataVal'Last / Regs(Inst.MulRs2));
    end DetectInvalidMul;
    
    function DetectInvalidDiv(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (Regs(Inst.DivRs2) = 0) or
+      return (DetectUninitializedVariable(Regs(Inst.DivRs1))) or
+             (DetectUninitializedVariable(Regs(Inst.DivRs2))) or
+             (Regs(Inst.DivRs2) = 0) or
              (Regs(Inst.DivRs1) = DataVal'First and Regs(Inst.DivRs2) = -1);
    end DetectInvalidDiv;
    
    function DetectInvalidLdr(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (Regs(Inst.LdrRs) < 0 - DataVal(Inst.LdrOffs)) or
+      return (DetectUninitializedVariable(Regs(Inst.LdrRs))) or
+             (Regs(Inst.LdrRs) < 0 - DataVal(Inst.LdrOffs)) or
              (Regs(Inst.LdrRs) > 65535 - DataVal(Inst.LdrOffs));
    end DetectInvalidLdr;
    
    function DetectInvalidStr(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (Regs(Inst.StrRa) < 0 - DataVal(Inst.StrOffs)) or
+      return (DetectUninitializedVariable(Regs(Inst.StrRa))) or
+             (Regs(Inst.StrRa) < 0 - DataVal(Inst.StrOffs)) or
              (Regs(Inst.StrRa) > 65535 - DataVal(Inst.StrOffs));
    end DetectInvalidStr;
    
@@ -244,15 +236,23 @@ package body Machine with SPARK_Mode is
              (Inst.MovOffs > (2**31 - 1));
    end DetectInvalidMov;
    
+   function DetectInvalidRet(Inst : in Instr; Regs : in Register) return Boolean is
+   begin
+      return (DetectUninitializedVariable(Regs(Inst.RetRs)));
+   end DetectInvalidRet;
+   
    function DetectInvalidJmp(Inst : in Instr; PC : in ProgramCounter) return Boolean is
    begin
-      return (Integer(PC) + Integer(Inst.JmpOffs) < 0) or
+      return (Integer(Inst.JmpOffs) = 0) or -- infinite loop
+             (Integer(PC) + Integer(Inst.JmpOffs) < 0) or
              (Integer(PC) + Integer(Inst.JmpOffs) > 65535);
    end DetectInvalidJmp;
    
    function DetectInvalidJz(Inst : in Instr; PC : in ProgramCounter; Regs: in Register) return Boolean is
    begin
-      return (Regs(Inst.JzRa) = 0 and then (
+      return (DetectUninitializedVariable(Regs(Inst.JzRa))) or
+             (Regs(Inst.JzRa) = 0 and then (
+                (Integer(Inst.JzOffs) = 0) or -- infinite loop
                 (Integer(PC) + Integer(Inst.JzOffs) < 0) or
                 (Integer(PC) + Integer(Inst.JzOffs) > 65535))
              ) or
@@ -275,88 +275,79 @@ package body Machine with SPARK_Mode is
    
    procedure PerformAdd(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
-      if not DetectInvalidAdd(Inst, Regs) then
-         Regs(Inst.AddRd) := Regs(Inst.AddRs1) + Regs(Inst.AddRs2);
-         if not DetectInvalidPC(PC, 1) then
-            PC := ProgramCounter(Integer(PC) + Integer(1));
-            Ret := False;
-         end if;
+      if not (DetectInvalidAdd(Inst, Regs) or DetectInvalidPC(PC, 1)) then
+         Regs(Inst.AddRd) := InitializedDataVal(Regs(Inst.AddRs1) + Regs(Inst.AddRs2));
+         PC := ProgramCounter(Integer(PC) + Integer(1));
+         Ret := False;
       end if;
    end PerformAdd;
    
    procedure PerformSub(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
-      if not DetectInvalidSub(Inst, Regs) then
-         Regs(Inst.SubRd) := Regs(Inst.SubRs1) - Regs(Inst.SubRs2);
-         if not DetectInvalidPC(PC, 1) then
-            PC := ProgramCounter(Integer(PC) + Integer(1));
-            Ret := False;
-         end if;
+      if not (DetectInvalidSub(Inst, Regs) or DetectInvalidPC(PC, 1)) then
+         Regs(Inst.SubRd) := InitializedDataVal(Regs(Inst.SubRs1) - Regs(Inst.SubRs2));
+         PC := ProgramCounter(Integer(PC) + Integer(1));
+         Ret := False;
       end if;
    end PerformSub;
    
    procedure PerformMul(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
-      if not DetectInvalidMul(Inst, Regs) then
-         Regs(Inst.MulRd) := Regs(Inst.MulRs1) * Regs(Inst.MulRs2);
-         if not DetectInvalidPC(PC, 1) then
-            PC := ProgramCounter(Integer(PC) + Integer(1));
-            Ret := False;
-         end if;
+      if not (DetectInvalidMul(Inst, Regs) or DetectInvalidPC(PC, 1)) then
+         Regs(Inst.MulRd) := InitializedDataVal(Regs(Inst.MulRs1) * Regs(Inst.MulRs2));
+         PC := ProgramCounter(Integer(PC) + Integer(1));
+         Ret := False;
       end if;
    end PerformMul;
    
    procedure PerformDiv(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
-      if not DetectInvalidDiv(Inst, Regs) then
-         Regs(Inst.DivRd) := Regs(Inst.DivRs1) / Regs(Inst.DivRs2);
-         if not DetectInvalidPC(PC, 1) then
-            PC := ProgramCounter(Integer(PC) + Integer(1));
-            Ret := False;
-         end if;
+      if not (DetectInvalidDiv(Inst, Regs) or DetectInvalidPC(PC, 1)) then
+         Regs(Inst.DivRd) := InitializedDataVal(Regs(Inst.DivRs1) / Regs(Inst.DivRs2));
+         PC := ProgramCounter(Integer(PC) + Integer(1));
+         Ret := False;
       end if;
    end PerformDiv;
    
-   procedure PerformLdr(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Memory : in Mem; Ret : in out Boolean) is
+   procedure PerformLdr(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Mem : in Memory; Ret : in out Boolean) is
    begin
-      if not DetectInvalidLdr(Inst, Regs) then
-         Regs(Inst.LdrRd) := Memory(Addr(Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs)));
-         if not DetectInvalidPC(PC, 1) then
-            PC := ProgramCounter(Integer(PC) + Integer(1));
-            Ret := False;
-         end if;
+      if not (DetectInvalidLdr(Inst, Regs) or DetectInvalidPC(PC, 1)) then
+         Regs(Inst.LdrRd) := InitializedDataVal(Mem(Addr(Regs(Inst.LdrRs) + DataVal(Inst.LdrOffs))));
+         PC := ProgramCounter(Integer(PC) + Integer(1));
+         Ret := False;
       end if;
    end PerformLdr;
    
-   procedure PerformStr(Inst : in Instr; PC : in out ProgramCounter; Regs : in Register; Memory : in out Mem; Ret : in out Boolean) is
+   procedure PerformStr(Inst : in Instr; PC : in out ProgramCounter; Regs : in Register; Mem : in out Memory; Ret : in out Boolean) is
    begin
-      if not DetectInvalidStr(Inst, Regs) then
-         Memory(Addr(Regs(Inst.StrRa) + DataVal(Inst.StrOffs))) := Regs(Inst.StrRb);
-         if not DetectInvalidPC(PC, 1) then
-            PC := ProgramCounter(Integer(PC) + Integer(1));
-            Ret := False;
-         end if;
+      if not (DetectInvalidStr(Inst, Regs) or DetectInvalidPC(PC, 1)) then
+         Mem(Addr(Regs(Inst.StrRa) + DataVal(Inst.StrOffs))) := InitializedDataVal(Regs(Inst.StrRb));
+         PC := ProgramCounter(Integer(PC) + Integer(1));
+         Ret := False;
       end if;
    end PerformStr;
    
    procedure PerformMov(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
-      if not DetectInvalidMov(Inst) then
-         Regs(Inst.MovRd) := DataVal(Inst.MovOffs);
-         if not DetectInvalidPC(PC, 1) then
-            PC := ProgramCounter(Integer(PC) + Integer(1));
-            Ret := False;
-         end if;
+      if not (DetectInvalidMov(Inst) or DetectInvalidPC(PC, 1)) then
+         Regs(Inst.MovRd) := InitializedDataVal(DataVal(Inst.MovOffs));
+         PC := ProgramCounter(Integer(PC) + Integer(1));
+         Ret := False;
       end if;
    end PerformMov;
    
+   procedure PerformRet(Inst : in Instr; Regs : in Register; Ret : in out Boolean) is
+   begin
+      if not DetectInvalidRet(Inst, Regs) then
+         Ret := False;
+      end if;
+   end PerformRet;
+   
    procedure PerformJmp(Inst : in Instr; PC : in out ProgramCounter; Ret : in out Boolean) is
    begin
-      if not DetectInvalidJmp(Inst, PC) then
-         if not DetectInvalidPC(PC, Inst.JmpOffs) then
-            PC := ProgramCounter(Integer(PC) + Integer(Inst.JmpOffs));
-            Ret := False;
-         end if;
+      if not (DetectInvalidJmp(Inst, PC) or DetectInvalidPC(PC, Inst.JmpOffs)) then
+         PC := ProgramCounter(Integer(PC) + Integer(Inst.JmpOffs));
+         Ret := False;
       end if; 
    end PerformJmp;
    
@@ -377,10 +368,11 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformJz;
    
-   procedure PerformNop(PC : in out ProgramCounter) is
+   procedure PerformNop(PC : in out ProgramCounter; Ret : in out Boolean) is
    begin
       if not DetectInvalidPC(PC, 1) then
          PC := ProgramCounter(Integer(PC) + Integer(1));
+         Ret := False;
       end if;
    end PerformNop;
    
@@ -389,52 +381,53 @@ package body Machine with SPARK_Mode is
       Inst : Instr;
       PC : ProgramCounter := ProgramCounter'First;
       Regs : Register := (others => 0);
-      Memory : Mem := (others => 0);
-      R : Boolean := True;
+      Mem : Memory := (others => 0);
+      Ret : Boolean := True;
    begin
-      while (CycleCount < Cycles) loop
+      while not DetectInvalidCycle(CycleCount, Cycles) loop
          Inst := Prog(PC);
+         Ret := True;
+         
+         -- debug print pc and current instruction
          Put(Integer(PC)); Put(':'); Put(Ada.Characters.Latin_1.HT);
          DebugPrintInstr(Inst);
          New_Line;
-         R := True;
+         
+         -- call respective procedure based on instruction operand
          case Inst.Op is
             when ADD =>
-               PerformAdd(Inst, PC, Regs, R);
+               PerformAdd(Inst, PC, Regs, Ret);
             when SUB =>
-               PerformSub(Inst, PC, Regs, R);
+               PerformSub(Inst, PC, Regs, Ret);
             when MUL =>
-               PerformMul(Inst, PC, Regs, R);
+               PerformMul(Inst, PC, Regs, Ret);
             when DIV =>
-               PerformDiv(Inst, PC, Regs, R);
+               PerformDiv(Inst, PC, Regs, Ret);
             when LDR =>
-               PerformLdr(Inst, PC, Regs, Memory, R);
+               PerformLdr(Inst, PC, Regs, Mem, Ret);
             when STR =>
-               PerformStr(Inst, PC, Regs, Memory, R);
+               PerformStr(Inst, PC, Regs, Mem, Ret);
             when MOV =>
-               PerformMov(Inst, PC, Regs, R);
+               PerformMov(Inst, PC, Regs, Ret);
             when Instruction.RET =>
-               R := DetectInvalidCycle(CycleCount, Cycles);
+               PerformRet(Inst, Regs, Ret);
                exit;
             when JMP =>
-               PerformJmp(Inst, PC, R);
+               PerformJmp(Inst, PC, Ret);
             when JZ =>
-               PerformJz(Inst, PC, Regs, R);
+               PerformJz(Inst, PC, Regs, Ret);
             when NOP =>
-               PerformNop(PC);
+               PerformNop(PC, Ret);
          end case;
+         
+         -- terminate early if invalid behaviour detected
+         exit when (Ret = True);
          CycleCount := CycleCount + 1;
-         if R = True then
-            exit;
-         end if;
       end loop;
-      return R;
+      return Ret;
    end DynamicAnalysis;
 
-   function DetectInvalidBehaviour(
-      Prog : in Program;
-      Cycles : in Integer
-   ) return Boolean is
+   function DetectInvalidBehaviour(Prog : in Program; Cycles : in Integer) return Boolean is
    begin     
       return DynamicAnalysis(Prog, Cycles);
    end DetectInvalidBehaviour;
