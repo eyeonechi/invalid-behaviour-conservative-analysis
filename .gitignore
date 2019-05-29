@@ -4,5 +4,9 @@
 # Ada Library Information
 *.ali
 
-# gnatprove folder
+# gnatprove files and folders
 src/gnatprove/*
+src/gnatinspect.db-shm
+src/gnatinspect.db-wal
+src/gpsauto.cgpr
+src/gnatinspect.db
