@@ -29,12 +29,6 @@ package body Machine with SPARK_Mode is
             when Initialized   => Value : IntegerVal;
          end case;
       end record;
-   -- type AccessDataVal is access all DataVal;
-   
-   -- uninitialized data value in virtual machine
-   -- subtype UninitializedDataVal is DataVal;
-   -- initialized data value in virtual machine
-   -- subtype InitializedDataVal is DataVal;
    
    -- initialise register as array of uninitialised values
    type Register is array (Reg) of DataVal;
@@ -493,6 +487,7 @@ package body Machine with SPARK_Mode is
       return Ret;
    end DynamicAnalysis;
    
+   -- generates instructions based on input parameters
    procedure GenerateInstr(Op : in OpCode; R1 : in Reg; R2 : in Reg; R3 : in Reg; Offs : Offset; Inst : out Instr) is
    begin
       case Op is
@@ -531,6 +526,7 @@ package body Machine with SPARK_Mode is
       end case;
    end GenerateInstr;
    
+   -- generates custom assembly programs to run with dynamic analysis
    procedure DynamicAnalysisTest(Cycles : in Integer) is
       Prog : Program := (others => (Op => NOP));
       HasInvalidBehaviour : Boolean;
