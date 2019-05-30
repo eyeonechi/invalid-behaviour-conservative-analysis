@@ -1,3 +1,12 @@
+-- SWEN90010 High Integrity Systems Engineering
+-- Assignment 3
+-- ---------------------------------------------------------------------------
+-- | Name                 | Student No. | Student Email                      |
+-- ---------------------------------------------------------------------------
+-- | Margareta Hardiyanti | 852105      | mhardiyanti@student.unimelb.edu.au |
+-- | Ivan Ken Weng Chee   | 736901      | ichee@student.unimelb.edu.au       |
+-- ---------------------------------------------------------------------------
+
 with Instruction;
 use Instruction;
 with Debug;
@@ -22,6 +31,7 @@ package body Machine with SPARK_Mode is
    -- initialise memory as array of uninitialised values
    type Memory is array (Addr) of UninitializedDataVal;
 
+   -- increases the program counter by an offset
    procedure IncPC(Ret :in out ReturnCode; Offs : in Offset; PC : in out ProgramCounter) is
    begin
       if Ret = Success then
@@ -35,6 +45,7 @@ package body Machine with SPARK_Mode is
       end if;
    end IncPC;
    
+   -- performs ADD instruction
    procedure DoAdd(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode; Regs : in out Register) is
    begin
       if (Regs(Rs2) > 0 and then Regs(Rs1) > DataVal'Last - Regs(Rs2)) or
@@ -46,6 +57,7 @@ package body Machine with SPARK_Mode is
       end if;
    end DoAdd;
    
+   -- performs SUB function
    procedure DoSub(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode; Regs : in out Register) is
    begin
       if (Regs(Rs2) < 0 and then Regs(Rs1) > DataVal'Last + Regs(Rs2)) or
@@ -57,6 +69,7 @@ package body Machine with SPARK_Mode is
       end if;
    end DoSub;
    
+   -- performs MUL instruction
    procedure DoMul(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode; Regs : in out Register) is
    begin
       if (Regs(Rs1) < 0 and then Regs(Rs2) < 0 and then Regs(Rs1) < DataVal'Last / Regs(Rs2)) or
@@ -69,6 +82,7 @@ package body Machine with SPARK_Mode is
       end if;
    end DoMul;
    
+   -- performs DIV instruction
    procedure DoDiv(Rd : in Reg; Rs1 : in Reg; Rs2 : in Reg; Ret : out ReturnCode; Regs : in out Register) is
    begin
       if Regs(Rs2) = 0 or (Regs(Rs1) = DataVal'First and Regs(Rs2) = -1) then
@@ -79,6 +93,7 @@ package body Machine with SPARK_Mode is
       end if;
    end DoDiv;
    
+   -- performs LDR instruction
    procedure DoLdr(Rd : in Reg; Rs : in Reg; Offs : in Offset; Ret : out ReturnCode; Regs : in out Register; Mem : in Memory) is
    begin
       if (Integer(Regs (Rs))  > Integer(Addr'Last) - Integer(Offs)) or
@@ -90,6 +105,7 @@ package body Machine with SPARK_Mode is
       end if;
    end DoLdr;
    
+   -- performs STR instruction
    procedure DoStr(Ra : in Reg; Offs : in Offset; Rb : in Reg; Ret : out ReturnCode; Regs : in Register; Mem : in out Memory) is
    begin
       if (Integer(Regs (Ra) ) > Integer(Addr'Last) - Integer(Offs)) or
@@ -101,6 +117,7 @@ package body Machine with SPARK_Mode is
       end if;
    end DoStr;
    
+   -- performs MOV instruction
    procedure DoMov(Rd : in Reg; Offs : in Offset; Ret : out ReturnCode; Regs : in out Register) with
       Pre => Integer(Offs) >= Integer(DataVal'First) and then Integer(Offs) <= Integer(DataVal'Last) is
    begin
@@ -108,6 +125,7 @@ package body Machine with SPARK_Mode is
       Ret := Success;
    end DoMov;
    
+   -- executes the virtual machine
    procedure ExecuteProgram(Prog : in Program; Cycles : in Integer; Ret : out ReturnCode; Result : out Integer) is
       CycleCount : Integer := 0;
       Inst : Instr;
@@ -128,6 +146,7 @@ package body Machine with SPARK_Mode is
          DebugPrintInstr(Inst);
          New_Line;
          
+         -- call respective procedure based on instruction operand
          case Inst.Op is
             when ADD =>
                DoAdd(Inst.AddRd, Inst.AddRs1, Inst.AddRs2, Ret, Regs);
@@ -167,17 +186,20 @@ package body Machine with SPARK_Mode is
          end case;
          CycleCount := CycleCount + 1;
       end loop;
+      
+      -- Cycles instructions executed without a RET or invalid behaviour
       if Ret = Success then
-         -- Cycles instructions executed without a RET or invalid behaviour
          Ret := CyclesExhausted;
       end if;
    end ExecuteProgram;
    
+   -- detects if a register or memory variable is uninitialised
    function DetectUninitializedVariable(Val : in DataVal) return Boolean is
    begin
       return Val in UninitializedDataVal;
    end DetectUninitializedVariable;
 
+   -- detects invalid ADD instruction behaviour
    function DetectInvalidAdd(Inst : in Instr; Regs: in Register) return Boolean is
    begin
       return (DetectUninitializedVariable(Regs(Inst.AddRs1))) or
@@ -186,6 +208,7 @@ package body Machine with SPARK_Mode is
              (Regs(Inst.AddRs2) < 0 and then Regs(Inst.AddRs1) < DataVal'First - Regs(Inst.AddRs2));
    end DetectInvalidAdd;
    
+   -- detects invalid SUB instruction behaviour
    function DetectInvalidSub(Inst : in Instr; Regs: in Register) return Boolean is
    begin
       return (DetectUninitializedVariable(Regs(Inst.SubRs1))) or
@@ -194,6 +217,7 @@ package body Machine with SPARK_Mode is
              (Regs(Inst.SubRs2) > 0 and then (Regs(Inst.SubRs1) < DataVal'First + Regs(Inst.SubRs2)));
    end DetectInvalidSub;
    
+   -- detects invalid MUL instruction behaviour
    function DetectInvalidMul(Inst : in Instr; Regs: in Register) return Boolean is
    begin
       return (DetectUninitializedVariable(Regs(Inst.MulRs1))) or
@@ -203,6 +227,7 @@ package body Machine with SPARK_Mode is
              (Regs(Inst.MulRs2) /= 0 and then Regs(Inst.MulRs1) > 0 and then Regs(Inst.MulRs1) > DataVal'Last / Regs(Inst.MulRs2));
    end DetectInvalidMul;
    
+   -- detects invalid DIV instruction behaviour
    function DetectInvalidDiv(Inst : in Instr; Regs: in Register) return Boolean is
    begin
       return (DetectUninitializedVariable(Regs(Inst.DivRs1))) or
@@ -211,6 +236,7 @@ package body Machine with SPARK_Mode is
              (Regs(Inst.DivRs1) = DataVal'First and Regs(Inst.DivRs2) = -1);
    end DetectInvalidDiv;
    
+   -- detects invalid LDR instruction behaviour
    function DetectInvalidLdr(Inst : in Instr; Regs: in Register) return Boolean is
    begin
       return (DetectUninitializedVariable(Regs(Inst.LdrRs))) or
@@ -218,6 +244,7 @@ package body Machine with SPARK_Mode is
              (Regs(Inst.LdrRs) > 65535 - DataVal(Inst.LdrOffs));
    end DetectInvalidLdr;
    
+   -- detects invalid STR instruction behaviour
    function DetectInvalidStr(Inst : in Instr; Regs: in Register) return Boolean is
    begin
       return (DetectUninitializedVariable(Regs(Inst.StrRa))) or
@@ -225,17 +252,14 @@ package body Machine with SPARK_Mode is
              (Regs(Inst.StrRa) > 65535 - DataVal(Inst.StrOffs));
    end DetectInvalidStr;
    
+   -- detects invalid MOV instruction behaviour
    function DetectInvalidMov(Inst : in Instr) return Boolean is
    begin
       return (Inst.MovOffs < -(2**31)) or
              (Inst.MovOffs > (2**31 - 1));
    end DetectInvalidMov;
-   
-   function DetectInvalidRet(Inst : in Instr; Regs : in Register) return Boolean is
-   begin
-      return (DetectUninitializedVariable(Regs(Inst.RetRs)));
-   end DetectInvalidRet;
-   
+
+   -- detects invalid JMP instruction behaviour
    function DetectInvalidJmp(Inst : in Instr; PC : in ProgramCounter) return Boolean is
    begin
       return (Integer(Inst.JmpOffs) = 0) or -- infinite loop
@@ -243,6 +267,7 @@ package body Machine with SPARK_Mode is
              (Integer(PC) + Integer(Inst.JmpOffs) > 65535);
    end DetectInvalidJmp;
    
+   -- detects invalid JZ instruction behaviour
    function DetectInvalidJz(Inst : in Instr; PC : in ProgramCounter; Regs: in Register) return Boolean is
    begin
       return (DetectUninitializedVariable(Regs(Inst.JzRa))) or
@@ -257,17 +282,20 @@ package body Machine with SPARK_Mode is
              );
    end DetectInvalidJz;
    
+   -- detects if a program has exhausted the given cycles
    function DetectInvalidCycle(CycleCount : in Integer; Cycles : in Integer) return Boolean is
    begin
       return not (CycleCount < Cycles);
    end DetectInvalidCycle;
    
+   -- detects invalid program counter values
    function DetectInvalidPC(PC : in ProgramCounter; Offs : in Offset) return Boolean is
    begin
       return (Integer(PC) > Integer(ProgramCounter'Last) - Integer(Offs)) or
              (Integer(PC) < Integer(ProgramCounter'First) - Integer(Offs));
    end DetectInvalidPC;
    
+   -- performs ADD instruction
    procedure PerformAdd(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
       if not (DetectInvalidAdd(Inst, Regs) or DetectInvalidPC(PC, 1)) then
@@ -277,6 +305,7 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformAdd;
    
+   -- performs ADD instruction
    procedure PerformSub(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
       if not (DetectInvalidSub(Inst, Regs) or DetectInvalidPC(PC, 1)) then
@@ -286,6 +315,7 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformSub;
    
+   -- performs MUL instruction
    procedure PerformMul(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
       if not (DetectInvalidMul(Inst, Regs) or DetectInvalidPC(PC, 1)) then
@@ -295,6 +325,7 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformMul;
    
+   -- performs DIV instruction
    procedure PerformDiv(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
       if not (DetectInvalidDiv(Inst, Regs) or DetectInvalidPC(PC, 1)) then
@@ -304,6 +335,7 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformDiv;
    
+   -- performs LDR instruction
    procedure PerformLdr(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Mem : in Memory; Ret : in out Boolean) is
    begin
       if not (DetectInvalidLdr(Inst, Regs) or DetectInvalidPC(PC, 1)) then
@@ -313,6 +345,7 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformLdr;
    
+   -- performs STR instruction
    procedure PerformStr(Inst : in Instr; PC : in out ProgramCounter; Regs : in Register; Mem : in out Memory; Ret : in out Boolean) is
    begin
       if not (DetectInvalidStr(Inst, Regs) or DetectInvalidPC(PC, 1)) then
@@ -322,6 +355,7 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformStr;
    
+   -- performs MOV instruction
    procedure PerformMov(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
       if not (DetectInvalidMov(Inst) or DetectInvalidPC(PC, 1)) then
@@ -331,13 +365,13 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformMov;
    
-   procedure PerformRet(Inst : in Instr; Regs : in Register; Ret : in out Boolean) is
+   -- performs RET instruction
+   procedure PerformRet(Ret : out Boolean) is
    begin
-      if not DetectInvalidRet(Inst, Regs) then
-         Ret := False;
-      end if;
+      Ret := False;
    end PerformRet;
    
+   -- performs JMP instruction
    procedure PerformJmp(Inst : in Instr; PC : in out ProgramCounter; Ret : in out Boolean) is
    begin
       if not (DetectInvalidJmp(Inst, PC) or DetectInvalidPC(PC, Inst.JmpOffs)) then
@@ -346,6 +380,7 @@ package body Machine with SPARK_Mode is
       end if; 
    end PerformJmp;
    
+   -- performs JZ instruction
    procedure PerformJz(Inst : in Instr; PC : in out ProgramCounter; Regs : in Register; Ret : in out Boolean) is
    begin
       if not DetectInvalidJz(Inst, PC, Regs) then
@@ -363,6 +398,7 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformJz;
    
+   -- performs NOP instruction
    procedure PerformNop(PC : in out ProgramCounter; Ret : in out Boolean) is
    begin
       if not DetectInvalidPC(PC, 1) then
@@ -371,6 +407,7 @@ package body Machine with SPARK_Mode is
       end if;
    end PerformNop;
    
+   -- performs dynamic analysis to detect invalid behaviour
    function DynamicAnalysis(Prog : in Program; Cycles : in Integer) return Boolean is
       CycleCount : Integer := 0;
       Inst : Instr;
@@ -384,9 +421,9 @@ package body Machine with SPARK_Mode is
          Ret := True;
          
          -- debug print pc and current instruction
-         Put(Integer(PC)); Put(':'); Put(Ada.Characters.Latin_1.HT);
-         DebugPrintInstr(Inst);
-         New_Line;
+         -- Put(Integer(PC)); Put(':'); Put(Ada.Characters.Latin_1.HT);
+         -- DebugPrintInstr(Inst);
+         -- New_Line;
          
          -- call respective procedure based on instruction operand
          case Inst.Op is
@@ -405,7 +442,7 @@ package body Machine with SPARK_Mode is
             when MOV =>
                PerformMov(Inst, PC, Regs, Ret);
             when Instruction.RET =>
-               PerformRet(Inst, Regs, Ret);
+               PerformRet(Ret);
                exit;
             when JMP =>
                PerformJmp(Inst, PC, Ret);
@@ -422,6 +459,7 @@ package body Machine with SPARK_Mode is
       return Ret;
    end DynamicAnalysis;
 
+   -- detects invalid behaviour before executing the program
    function DetectInvalidBehaviour(Prog : in Program; Cycles : in Integer) return Boolean is
    begin     
       return DynamicAnalysis(Prog, Cycles);
