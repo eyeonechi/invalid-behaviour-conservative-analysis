@@ -1,0 +1,22 @@
+[GENERATED OBJECT FILE]
+b__driver.o
+[PROJECT FILES]
+I:\invalid-behaviour-conservative-analysis\src\default.gpr
+20190530160728
+[BOUND OBJECT FILES]
+I:\invalid-behaviour-conservative-analysis\src\debug.o
+I:\invalid-behaviour-conservative-analysis\src\instruction.o
+I:\invalid-behaviour-conservative-analysis\src\machine.o
+I:\invalid-behaviour-conservative-analysis\src\driver.o
+[GENERATED SOURCE FILES]
+b__driver.ads
+b__driver.adb
+b__driver.ali
+[RESULTING OPTIONS]
+-LI:\invalid-behaviour-conservative-analysis\src\
+-LI:\invalid-behaviour-conservative-analysis\src\
+-LC:/gnat/2018/lib/gcc/x86_64-pc-mingw32/7.3.1/adalib/
+-static
+-static-libgcc
+C:/gnat/2018/lib/gcc/x86_64-pc-mingw32/7.3.1/adalib/libgnat.a
+-Wl,--stack=0x2000000
