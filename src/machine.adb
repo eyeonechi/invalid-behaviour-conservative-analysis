@@ -538,7 +538,45 @@ package body Machine with SPARK_Mode is
       GenerateInstr(MOV, 2, 0, 0, 2, Prog(2));
       GenerateInstr(ADD, 0, 1, 2, 0, Prog(3));
       GenerateInstr(RET, 0, 0, 0, 0, Prog(4));
+      -- perform dynamic analysis on this program
+      Put_Line("   Analysing Program for Invalid Behaviour...");
+      HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
+      Put("   Analysis Result: ");
+      Put(HasInvalidBehaviour'Image); New_Line;
+      Put_Line("---------------------------------------------");
       
+      -- generate a particular program
+      Put_Line("---------------------------------------------");
+      Put_Line("   Generating Test Program...");
+      GenerateInstr(DIV, 0, 0, 0, 0, Prog(1));
+      GenerateInstr(MOV, 0, 0, 0, 0, Prog(2));
+      -- perform dynamic analysis on this program
+      Put_Line("   Analysing Program for Invalid Behaviour...");
+      HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
+      Put("   Analysis Result: ");
+      Put(HasInvalidBehaviour'Image); New_Line;
+      Put_Line("---------------------------------------------");
+      
+      -- generate a particular program
+      Put_Line("---------------------------------------------");
+      Put_Line("   Generating Test Program...");
+      GenerateInstr(MOV, 2, 0, 0, 1, Prog(1));
+      GenerateInstr(DIV, 0, 1, 2, 0, Prog(2));
+      GenerateInstr(RET, 0, 0, 0, 0, Prog(3));
+      -- perform dynamic analysis on this program
+      Put_Line("   Analysing Program for Invalid Behaviour...");
+      HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
+      Put("   Analysis Result: ");
+      Put(HasInvalidBehaviour'Image); New_Line;
+      Put_Line("---------------------------------------------");
+      
+      -- generate a particular program
+      Put_Line("---------------------------------------------");
+      Put_Line("   Generating Test Program...");
+      GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
+      GenerateInstr(MOV, 2, 0, 0, 2, Prog(2));
+      GenerateInstr(DIV, 0, 1, 2, 0, Prog(3));
+      GenerateInstr(RET, 0, 0, 0, 0, Prog(4));
       -- perform dynamic analysis on this program
       Put_Line("   Analysing Program for Invalid Behaviour...");
       HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
