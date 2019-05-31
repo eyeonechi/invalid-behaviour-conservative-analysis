@@ -285,12 +285,14 @@ package body Machine with SPARK_Mode is
                 (Regs(Inst.MulRs1).Value > 0 and then Regs(Inst.MulRs2).Value > 0 and then Regs(Inst.MulRs1).Value > IntegerVal'Last / Regs(Inst.MulRs2).Value) or
                 -- {Rb : -X, Rc : -Y}
                 (Regs(Inst.MulRs1).Value < 0 and then Regs(Inst.MulRs2).Value < 0 and then Regs(Inst.MulRs1).Value > IntegerVal'Last / Regs(Inst.MulRs2).Value) or
-                -- {Rb : +X, Rc : -Y}
-                (Regs(Inst.MulRs1).Value > 0 and then Regs(Inst.MulRs2).Value < 0 and then Regs(Inst.MulRs1).Value < IntegerVal'First / Regs(Inst.MulRs2).Value) or
                 -- {Rb : -X, Rc : +Y}
                 (Regs(Inst.MulRs1).Value < 0 and then Regs(Inst.MulRs2).Value > 0 and then Regs(Inst.MulRs1).Value < IntegerVal'First / Regs(Inst.MulRs2).Value) or
-                -- {Rb : X, Rc : /0}
-                (Regs(Inst.MulRs2).Value /= 0 and then Regs(Inst.MulRs1).Value > 0 and then Regs(Inst.MulRs1).Value > IntegerVal'Last / Regs(Inst.MulRs2).Value)
+                -- {Rb : +X, Rc : -Y}
+                (Regs(Inst.MulRs1).Value > 0 and then Regs(Inst.MulRs2).Value < 0 and then Regs(Inst.MulRs2).Value < IntegerVal'First / Regs(Inst.MulRs1).Value) or
+                -- {Rb : 0, Rc : Y}
+                not (Regs(Inst.MulRs1).Value = 0 and then Regs(Inst.MulRs2).Value > 0 and then Regs(Inst.MulRs1).Value > IntegerVal'Last / Regs(Inst.MulRs2).Value) or
+                -- {Rb : X, Rc : 0}
+                not (Regs(Inst.MulRs2).Value = 0 and then Regs(Inst.MulRs1).Value > 0 and then Regs(Inst.MulRs2).Value > IntegerVal'Last / Regs(Inst.MulRs1).Value)
              ));
    end DetectInvalidMul;
    
@@ -566,13 +568,13 @@ package body Machine with SPARK_Mode is
    begin
       if not DetectInvalidJz(Inst, PC, Regs) then
          -- {Ra : 0}
-         if Regs(Inst.JzRa).State = Initialized and Regs(Inst.JzRa).Value = 0 then
+         if (Regs(Inst.JzRa).State = Initialized) and then (Regs(Inst.JzRa).Value = 0) then
             if not DetectInvalidPC(PC, Inst.JzOffs) then
                PC := ProgramCounter(Integer(PC) + Integer(Inst.JzOffs));
                Ret := False;
             end if;
          -- {Ra : /0}
-         elsif Regs(Inst.JzRa).State = Initialized and Regs(Inst.JzRa).Value /= 0 then
+         elsif (Regs(Inst.JzRa).State = Initialized) and then (Regs(Inst.JzRa).Value /= 0) then
             if not DetectInvalidPC(PC, 1) then
                PC := ProgramCounter(Integer(PC) + Integer(1));
                Ret := False;
@@ -657,151 +659,10 @@ package body Machine with SPARK_Mode is
       return Ret;
    end DynamicAnalysis;
    
---     -- generates instructions based on input parameters
---     procedure GenerateInstr(Op : in OpCode; R1 : in Reg; R2 : in Reg; R3 : in Reg; Offs : Offset; Inst : out Instr) is
---     begin
---        case Op is
---           when ADD =>
---              Inst := (Op => ADD, AddRd => R1, AddRs1 => R2, AddRs2 => R3);
---              return;
---           when SUB =>
---              Inst := (Op => SUB, SubRd => R1, SubRs1 => R2, SubRs2 => R3);
---              return;
---           when MUL =>
---              Inst := (Op => MUL, MulRd => R1, MulRs1 => R2, MulRs2 => R3);
---              return;
---           when DIV =>
---              Inst := (Op => DIV, DivRd => R1, DivRs1 => R2, DivRs2 => R3);
---              return;
---           when RET =>
---              Inst := (Op => RET, RetRs => R1);
---              return;
---           when LDR =>
---              Inst := (Op => LDR, LdrRd => R1, LdrRs => R2, LdrOffs => Offs);
---              return;
---           when STR =>
---              Inst := (Op => STR, StrRa => R1, StrOffs => Offs, StrRb => R2);
---              return;
---           when MOV =>
---              Inst := (Op => MOV, MovRd => R1, MovOffs => Offs);
---              return;
---           when JMP =>
---              Inst := (Op => JMP, JmpOffs => Offs);
---              return;
---           when JZ =>
---              Inst := (Op => JZ, JzRa => R1, JzOffs => Offs);
---              return;
---           when NOP =>
---              Inst := (OP => NOP);
---        end case;
---     end GenerateInstr;
---     
---     -- generates custom assembly programs to run with dynamic analysis
---     procedure DynamicAnalysisTest(Cycles : in Integer) is
---        Prog : Program := (others => (Op => NOP));
---        HasInvalidBehaviour : Boolean;
---     begin
---        -- generate a particular program
---        Put_Line("---------------------------------------------");
---        Put_Line("   Generating Test Program...");
---        GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
---        GenerateInstr(MOV, 2, 0, 0, 2, Prog(2));
---        GenerateInstr(ADD, 0, 1, 2, 0, Prog(3));
---        GenerateInstr(RET, 0, 0, 0, 0, Prog(4));
---        -- perform dynamic analysis on this program
---        Put_Line("   Analysing Program for Invalid Behaviour...");
---        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
---        Put("   Analysis Result: ");
---        Put(HasInvalidBehaviour'Image); New_Line;
---        Put_Line("---------------------------------------------");
---        
---        -- generate a particular program
---        Put_Line("---------------------------------------------");
---        Put_Line("   Generating Test Program...");
---        GenerateInstr(DIV, 0, 0, 0, 0, Prog(1));
---        GenerateInstr(RET, 0, 0, 0, 0, Prog(2));
---        -- perform dynamic analysis on this program
---        Put_Line("   Analysing Program for Invalid Behaviour...");
---        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
---        Put("   Analysis Result: ");
---        Put(HasInvalidBehaviour'Image); New_Line;
---        Put_Line("---------------------------------------------");
---        
---        -- generate a particular program
---        Put_Line("---------------------------------------------");
---        Put_Line("   Generating Test Program...");
---        GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
---        GenerateInstr(DIV, 0, 1, 2, 0, Prog(2));
---        GenerateInstr(RET, 0, 0, 0, 0, Prog(3));
---        -- perform dynamic analysis on this program
---        Put_Line("   Analysing Program for Invalid Behaviour...");
---        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
---        Put("   Analysis Result: ");
---        Put(HasInvalidBehaviour'Image); New_Line;
---        Put_Line("---------------------------------------------");
---        
---        -- generate a particular program
---        Put_Line("---------------------------------------------");
---        Put_Line("   Generating Test Program...");
---        GenerateInstr(MOV, 2, 0, 0, 1, Prog(1));
---        GenerateInstr(DIV, 0, 1, 2, 0, Prog(2));
---        GenerateInstr(RET, 0, 0, 0, 0, Prog(3));
---        -- perform dynamic analysis on this program
---        Put_Line("   Analysing Program for Invalid Behaviour...");
---        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
---        Put("   Analysis Result: ");
---        Put(HasInvalidBehaviour'Image); New_Line;
---        Put_Line("---------------------------------------------");
---        
---        -- generate a particular program
---        Put_Line("---------------------------------------------");
---        Put_Line("   Generating Test Program...");
---        GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
---        GenerateInstr(MOV, 2, 0, 0, 2, Prog(2));
---        GenerateInstr(DIV, 0, 1, 2, 0, Prog(3));
---        GenerateInstr(RET, 0, 0, 0, 0, Prog(4));
---        -- perform dynamic analysis on this program
---        Put_Line("   Analysing Program for Invalid Behaviour...");
---        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
---        Put("   Analysis Result: ");
---        Put(HasInvalidBehaviour'Image); New_Line;
---        Put_Line("---------------------------------------------");
---     end DynamicAnalysisTest;
-   
---     -- performs static analysis to detect invalid behaviour
---     function StaticAnalysis(Prog : in Program) return Boolean is
---        CycleCount : Integer := 0;
---        RetCount : Integer := 0;
---        Inst : Instr;
---        Ret : Boolean := True;
---     begin
---        for CycleCount in MAX_PROGRAM_LENGTH loop
---           Inst := Prog(PC);
---           Ret := True;
---           
---           -- debug print pc and current instruction
---           Put(Integer(PC)); Put(':'); Put(Ada.Characters.Latin_1.HT);
---           DebugPrintInstr(Inst);
---           New_Line;
---           
---           -- count the number of RET instructions
---           case Inst.Op is
---              when Instruction.RET =>
---                 RetCount := RetCount + 1;
---           end case;
---           
---           -- terminate early if invalid behaviour detected
---           exit when (Ret = True);
---           CycleCount := CycleCount + 1;
---        end loop;
---     end StaticAnalysis;
-
    -- detects invalid behaviour before executing the program
    function DetectInvalidBehaviour(Prog : in Program; Cycles : in Integer) return Boolean is
    begin
       return Ret : Boolean do
-         -- uncomment line below and procedures above to test custom programs
-         -- DynamicAnalysisTest(Cycles);
          Ret := DynamicAnalysis(Prog, Cycles);
       end return;
    end DetectInvalidBehaviour;

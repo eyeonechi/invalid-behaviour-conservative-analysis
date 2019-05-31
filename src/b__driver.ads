@@ -335,7 +335,7 @@ package ada_main is
    pragma Export (C, u00148, "system__task_lockS");
    u00149 : constant Version_32 := 16#1a9147da#;
    pragma Export (C, u00149, "system__win32__extS");
-   u00150 : constant Version_32 := 16#b58af240#;
+   u00150 : constant Version_32 := 16#d8b4b381#;
    pragma Export (C, u00150, "machineB");
    u00151 : constant Version_32 := 16#8ffc8149#;
    pragma Export (C, u00151, "machineS");
