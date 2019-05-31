@@ -1,0 +1,516 @@
+{
+  "spark": [
+    {
+      "name": "Instruction",
+      "sloc": [
+        {
+          "file": "instruction.ads",
+          "line": 2
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Instruction.Init",
+      "sloc": [
+        {
+          "file": "instruction.ads",
+          "line": 70
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Instruction.GenerateRandomInstr",
+      "sloc": [
+        {
+          "file": "instruction.ads",
+          "line": 74
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Instruction.DebugPrintInstr",
+      "sloc": [
+        {
+          "file": "instruction.ads",
+          "line": 78
+        }
+      ],
+      "spark": "all"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Generator",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 50
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Random",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 52
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 54
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 55
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.State",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 59
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Save",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 61
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 62
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Image",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 66
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_OpCode.Value",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 67
+        },
+        {
+          "file": "instruction.adb",
+          "line": 7
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Generator",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 50
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Random",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 52
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 54
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 55
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.State",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 59
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Save",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 61
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 62
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Image",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 66
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Reg.Value",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 67
+        },
+        {
+          "file": "instruction.adb",
+          "line": 8
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Generator",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 50
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Random",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 52
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 54
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 55
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.State",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 59
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Save",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 61
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Reset",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 62
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Image",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 66
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.Random_Offset.Value",
+      "sloc": [
+        {
+          "file": "a-nudira.ads",
+          "line": 67
+        },
+        {
+          "file": "instruction.adb",
+          "line": 9
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.PutReg",
+      "sloc": [
+        {
+          "file": "instruction.adb",
+          "line": 65
+        }
+      ],
+      "spark": "no"
+    },
+    {
+      "name": "Instruction.PutOffset",
+      "sloc": [
+        {
+          "file": "instruction.adb",
+          "line": 71
+        }
+      ],
+      "spark": "no"
+    }
+  ],
+  "flow": [
+  ],
+  "assumptions": [
+    {
+      "assumptions": [
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Debug.Put",
+            "sloc": [
+              {
+                "file": "debug.ads",
+                "line": 4
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Debug.Put",
+            "sloc": [
+              {
+                "file": "debug.ads",
+                "line": 20
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Instruction.PutOffset",
+            "sloc": [
+              {
+                "file": "instruction.adb",
+                "line": 71
+              }
+            ]
+          }
+        },
+        {
+          "predicate": "CLAIM_EFFECTS",
+          "arg": {
+            "name": "Instruction.PutReg",
+            "sloc": [
+              {
+                "file": "instruction.adb",
+                "line": 65
+              }
+            ]
+          }
+        }
+      ],
+      "claim": {
+        "predicate": "CLAIM_EFFECTS",
+        "arg": {
+          "name": "Instruction.DebugPrintInstr",
+          "sloc": [
+            {
+              "file": "instruction.ads",
+              "line": 78
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "timings": {
+    "marking": 1.81349995546043E-03,
+    "globals (basic)": 1.42500996589661E-02,
+    "globals/properties (advanced)": 2.91342008858919E-02,
+    "flow analysis": 3.33721004426479E-02
+  }
+}

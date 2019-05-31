@@ -1,0 +1,98 @@
+Summary of SPARK analysis
+=========================
+
+--------------------------------------------------------------------------------------------------------
+SPARK Analysis results        Total          Flow   Interval   CodePeer   Provers   Justified   Unproved
+--------------------------------------------------------------------------------------------------------
+Data Dependencies                 .             .          .          .         .           .          .
+Flow Dependencies                 .             .          .          .         .           .          .
+Initialization                  790           790          .          .         .           .          .
+Non-Aliasing                      .             .          .          .         .           .          .
+Run-time Checks                   .             .          .          .         .           .          .
+Assertions                        .             .          .          .         .           .          .
+Functional Contracts              .             .          .          .         .           .          .
+LSP Verification                  .             .          .          .         .           .          .
+--------------------------------------------------------------------------------------------------------
+Total                           790    790 (100%)          .          .         .           .          .
+
+
+Analyzed 4 units
+in unit debug, 0 subprograms and packages out of 6 analyzed
+  Debug at debug.ads:2 skipped
+  Debug.New_Line at debug.ads:16 skipped
+  Debug.Put at debug.ads:4 skipped
+  Debug.Put at debug.ads:12 skipped
+  Debug.Put at debug.ads:20 skipped
+  Debug.Put_Line at debug.ads:8 skipped
+in unit driver, 1 subprograms and packages out of 1 analyzed
+  Driver at driver.adb:7 flow analyzed (0 errors, 0 checks and 0 warnings)
+in unit instruction, 1 subprograms and packages out of 33 analyzed
+  Instruction at instruction.ads:2 skipped
+  Instruction.DebugPrintInstr at instruction.ads:78 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Instruction.GenerateRandomInstr at instruction.ads:74 skipped
+  Instruction.Init at instruction.ads:70 skipped
+  Instruction.PutOffset at instruction.adb:71 skipped
+  Instruction.PutReg at instruction.adb:65 skipped
+  Instruction.Random_Offset.Generator at a-nudira.ads:50, instantiated at instruction.adb:9 skipped
+  Instruction.Random_Offset.Image at a-nudira.ads:66, instantiated at instruction.adb:9 skipped
+  Instruction.Random_Offset.Random at a-nudira.ads:52, instantiated at instruction.adb:9 skipped
+  Instruction.Random_Offset.Reset at a-nudira.ads:54, instantiated at instruction.adb:9 skipped
+  Instruction.Random_Offset.Reset at a-nudira.ads:55, instantiated at instruction.adb:9 skipped
+  Instruction.Random_Offset.Reset at a-nudira.ads:62, instantiated at instruction.adb:9 skipped
+  Instruction.Random_Offset.Save at a-nudira.ads:61, instantiated at instruction.adb:9 skipped
+  Instruction.Random_Offset.State at a-nudira.ads:59, instantiated at instruction.adb:9 skipped
+  Instruction.Random_Offset.Value at a-nudira.ads:67, instantiated at instruction.adb:9 skipped
+  Instruction.Random_OpCode.Generator at a-nudira.ads:50, instantiated at instruction.adb:7 skipped
+  Instruction.Random_OpCode.Image at a-nudira.ads:66, instantiated at instruction.adb:7 skipped
+  Instruction.Random_OpCode.Random at a-nudira.ads:52, instantiated at instruction.adb:7 skipped
+  Instruction.Random_OpCode.Reset at a-nudira.ads:54, instantiated at instruction.adb:7 skipped
+  Instruction.Random_OpCode.Reset at a-nudira.ads:55, instantiated at instruction.adb:7 skipped
+  Instruction.Random_OpCode.Reset at a-nudira.ads:62, instantiated at instruction.adb:7 skipped
+  Instruction.Random_OpCode.Save at a-nudira.ads:61, instantiated at instruction.adb:7 skipped
+  Instruction.Random_OpCode.State at a-nudira.ads:59, instantiated at instruction.adb:7 skipped
+  Instruction.Random_OpCode.Value at a-nudira.ads:67, instantiated at instruction.adb:7 skipped
+  Instruction.Random_Reg.Generator at a-nudira.ads:50, instantiated at instruction.adb:8 skipped
+  Instruction.Random_Reg.Image at a-nudira.ads:66, instantiated at instruction.adb:8 skipped
+  Instruction.Random_Reg.Random at a-nudira.ads:52, instantiated at instruction.adb:8 skipped
+  Instruction.Random_Reg.Reset at a-nudira.ads:54, instantiated at instruction.adb:8 skipped
+  Instruction.Random_Reg.Reset at a-nudira.ads:55, instantiated at instruction.adb:8 skipped
+  Instruction.Random_Reg.Reset at a-nudira.ads:62, instantiated at instruction.adb:8 skipped
+  Instruction.Random_Reg.Save at a-nudira.ads:61, instantiated at instruction.adb:8 skipped
+  Instruction.Random_Reg.State at a-nudira.ads:59, instantiated at instruction.adb:8 skipped
+  Instruction.Random_Reg.Value at a-nudira.ads:67, instantiated at instruction.adb:8 skipped
+in unit machine, 35 subprograms and packages out of 35 analyzed
+  Machine at machine.ads:4 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidAdd at machine.adb:234 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidBehaviour at machine.ads:47 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidCycle at machine.adb:403 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidDiv at machine.adb:300 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidJmp at machine.adb:349 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidJz at machine.adb:360 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidLdr at machine.adb:320 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidMov at machine.adb:340 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidMul at machine.adb:270 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidPC at machine.adb:409 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidStr at machine.adb:330 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectInvalidSub at machine.adb:252 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DetectUninitializedVariable at machine.adb:228 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DoAdd at machine.adb:67 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DoDiv at machine.adb:106 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DoLdr at machine.adb:118 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DoMov at machine.adb:144 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DoMul at machine.adb:93 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DoStr at machine.adb:131 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DoSub at machine.adb:80 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.DynamicAnalysis at machine.adb:608 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.ExecuteProgram at machine.ads:35 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.IncPC at machine.adb:51 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformAdd at machine.adb:418 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformDiv at machine.adb:484 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformJmp at machine.adb:558 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformJz at machine.adb:567 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformLdr at machine.adb:502 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformMov at machine.adb:540 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformMul at machine.adb:462 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformNop at machine.adb:599 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformRet at machine.adb:552 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformStr at machine.adb:520 flow analyzed (0 errors, 0 checks and 0 warnings)
+  Machine.PerformSub at machine.adb:440 flow analyzed (0 errors, 0 checks and 0 warnings)

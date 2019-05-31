@@ -1,0 +1,74 @@
+{
+  "spark": [
+    {
+      "name": "Debug",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 2
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.Put",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 4
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.Put_Line",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 8
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.Put",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 12
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.New_Line",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 16
+        }
+      ],
+      "spark": "spec"
+    },
+    {
+      "name": "Debug.Put",
+      "sloc": [
+        {
+          "file": "debug.ads",
+          "line": 20
+        }
+      ],
+      "spark": "spec"
+    }
+  ],
+  "flow": [
+  ],
+  "assumptions": [
+  ],
+  "timings": {
+    "marking": 2.13559996336699E-03,
+    "globals (basic)": 1.31860002875328E-02,
+    "globals/properties (advanced)": 2.54087001085281E-02,
+    "flow analysis": 9.17400000616908E-04
+  }
+}
