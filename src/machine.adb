@@ -302,8 +302,8 @@ package body Machine with SPARK_Mode is
    begin
       return (DetectUninitializedVariable(Regs(Inst.LdrRs))) or
              (Regs(Inst.LdrRs).State = Initialized and then (
-                (Regs(Inst.LdrRs).Value < 0 - IntegerVal(Inst.LdrOffs)) or
-                (Regs(Inst.LdrRs).Value > 65535 - IntegerVal(Inst.LdrOffs))
+                (Regs(Inst.LdrRs).Value < IntegerVal(Addr'First) - IntegerVal(Inst.LdrOffs)) or
+                (Regs(Inst.LdrRs).Value > IntegerVal(Addr'Last) - IntegerVal(Inst.LdrOffs))
              ));
    end DetectInvalidLdr;
    
@@ -312,8 +312,8 @@ package body Machine with SPARK_Mode is
    begin
       return (DetectUninitializedVariable(Regs(Inst.StrRa))) or
              (Regs(Inst.StrRa).State = Initialized and then (
-                (Regs(Inst.StrRa).Value < 0 - IntegerVal(Inst.StrOffs)) or
-                (Regs(Inst.StrRa).Value > 65535 - IntegerVal(Inst.StrOffs))
+                (Regs(Inst.StrRa).Value < IntegerVal(Addr'First) - IntegerVal(Inst.StrOffs)) or
+                (Regs(Inst.StrRa).Value > IntegerVal(Addr'Last) - IntegerVal(Inst.StrOffs))
              ));
    end DetectInvalidStr;
    
@@ -332,9 +332,9 @@ package body Machine with SPARK_Mode is
       return -- JMP 0 (infinite loop)
              (Integer(Inst.JmpOffs) = 0) or
              -- JMP before program starts
-             (Integer(PC) + Integer(Inst.JmpOffs) < 1) or
+             (Integer(PC) + Integer(Inst.JmpOffs) < Integer(ProgramCounter'First)) or
              -- JMP after program ends
-             (Integer(PC) + Integer(Inst.JmpOffs) > 65535);
+             (Integer(PC) + Integer(Inst.JmpOffs) > Integer(ProgramCounter'Last));
    end DetectInvalidJmp;
    
    -- detects invalid JZ instruction behaviour
@@ -347,17 +347,17 @@ package body Machine with SPARK_Mode is
                 -- JZ 0 0 (infinite loop)
                 (Integer(Inst.JzOffs) = 0) or
                 -- JZ before program starts
-                (Integer(PC) + Integer(Inst.JzOffs) < 1) or
+                (Integer(PC) + Integer(Inst.JzOffs) < Integer(ProgramCounter'First)) or
                 -- JZ after program ends
-                (Integer(PC) + Integer(Inst.JzOffs) > 65535))
+                (Integer(PC) + Integer(Inst.JzOffs) > Integer(ProgramCounter'Last)))
              ) or
              -- JZ /0 X
              (Regs(Inst.JzRa).State = Initialized and then Regs(Inst.JzRa).Value /= 0 and then (
                 -- JZ before program starts
-                (Integer(PC) + 1 < 1) or
+                (Integer(PC) + 1 < Integer(ProgramCounter'First)) or
                 -- JZ after program ends
-                (Integer(PC) + 1 > 65535))
-             );
+                (Integer(PC) + 1 > Integer(ProgramCounter'Last))
+             ));
    end DetectInvalidJz;
    
    -- detects if a program has exhausted the given cycles
@@ -453,18 +453,26 @@ package body Machine with SPARK_Mode is
          if Mem(Addr(Regs(Inst.LdrRs).Value + IntegerVal(Inst.LdrOffs))).State = Initialized then
             Regs(Inst.LdrRd) := (State => Initialized,
                                  Value => Mem(Addr(Regs(Inst.LdrRs).Value + IntegerVal(Inst.LdrOffs))).Value);
-            PC := ProgramCounter(Integer(PC) + Integer(1));
-            Ret := False;
+         elsif Mem(Addr(Regs(Inst.LdrRs).Value + IntegerVal(Inst.LdrOffs))).State = Uninitialized then
+            Regs(Inst.LdrRd) := (State => Initialized,
+                                 Value => Mem(Addr(Regs(Inst.LdrRs).Value + IntegerVal(Inst.LdrOffs))).Garbage);
          end if;
+         PC := ProgramCounter(Integer(PC) + Integer(1));
+         Ret := False;
       end if;
    end PerformLdr;
    
    -- performs STR instruction
    procedure PerformStr(Inst : in Instr; PC : in out ProgramCounter; Regs : in Register; Mem : in out Memory; Ret : in out Boolean) is
    begin
-      if not (DetectInvalidStr(Inst, Regs) or DetectInvalidPC(PC, 1)) and Regs(Inst.StrRb).State = Initialized then
-         Mem(Addr(Regs(Inst.StrRa).Value + IntegerVal(Inst.StrOffs))) := (State => Initialized,
-                                                                          Value => Regs(Inst.StrRb).Value);
+      if not (DetectInvalidStr(Inst, Regs) or DetectInvalidPC(PC, 1)) and Regs(Inst.StrRa).State = Initialized then
+         if Regs(Inst.StrRb).State = Initialized then
+            Mem(Addr(Regs(Inst.StrRa).Value + IntegerVal(Inst.StrOffs))) := (State => Initialized,
+                                                                             Value => Regs(Inst.StrRb).Value);
+         elsif Regs(Inst.StrRb).State = Uninitialized then
+            Mem(Addr(Regs(Inst.StrRa).Value + IntegerVal(Inst.StrOffs))) := (State => Initialized,
+                                                                             Value => Regs(Inst.StrRb).Garbage);
+         end if;
          PC := ProgramCounter(Integer(PC) + Integer(1));
          Ret := False;
       end if;
@@ -577,116 +585,116 @@ package body Machine with SPARK_Mode is
       return Ret;
    end DynamicAnalysis;
    
-   -- generates instructions based on input parameters
-   procedure GenerateInstr(Op : in OpCode; R1 : in Reg; R2 : in Reg; R3 : in Reg; Offs : Offset; Inst : out Instr) is
-   begin
-      case Op is
-         when ADD =>
-            Inst := (Op => ADD, AddRd => R1, AddRs1 => R2, AddRs2 => R3);
-            return;
-         when SUB =>
-            Inst := (Op => SUB, SubRd => R1, SubRs1 => R2, SubRs2 => R3);
-            return;
-         when MUL =>
-            Inst := (Op => MUL, MulRd => R1, MulRs1 => R2, MulRs2 => R3);
-            return;
-         when DIV =>
-            Inst := (Op => DIV, DivRd => R1, DivRs1 => R2, DivRs2 => R3);
-            return;
-         when RET =>
-            Inst := (Op => RET, RetRs => R1);
-            return;
-         when LDR =>
-            Inst := (Op => LDR, LdrRd => R1, LdrRs => R2, LdrOffs => Offs);
-            return;
-         when STR =>
-            Inst := (Op => STR, StrRa => R1, StrOffs => Offs, StrRb => R2);
-            return;
-         when MOV =>
-            Inst := (Op => MOV, MovRd => R1, MovOffs => Offs);
-            return;
-         when JMP =>
-            Inst := (Op => JMP, JmpOffs => Offs);
-            return;
-         when JZ =>
-            Inst := (Op => JZ, JzRa => R1, JzOffs => Offs);
-            return;
-         when NOP =>
-            Inst := (OP => NOP);
-      end case;
-   end GenerateInstr;
-   
-   -- generates custom assembly programs to run with dynamic analysis
-   procedure DynamicAnalysisTest(Cycles : in Integer) is
-      Prog : Program := (others => (Op => NOP));
-      HasInvalidBehaviour : Boolean;
-   begin
-      -- generate a particular program
-      Put_Line("---------------------------------------------");
-      Put_Line("   Generating Test Program...");
-      GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
-      GenerateInstr(MOV, 2, 0, 0, 2, Prog(2));
-      GenerateInstr(ADD, 0, 1, 2, 0, Prog(3));
-      GenerateInstr(RET, 0, 0, 0, 0, Prog(4));
-      -- perform dynamic analysis on this program
-      Put_Line("   Analysing Program for Invalid Behaviour...");
-      HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
-      Put("   Analysis Result: ");
-      Put(HasInvalidBehaviour'Image); New_Line;
-      Put_Line("---------------------------------------------");
-      
-      -- generate a particular program
-      Put_Line("---------------------------------------------");
-      Put_Line("   Generating Test Program...");
-      GenerateInstr(DIV, 0, 0, 0, 0, Prog(1));
-      GenerateInstr(RET, 0, 0, 0, 0, Prog(2));
-      -- perform dynamic analysis on this program
-      Put_Line("   Analysing Program for Invalid Behaviour...");
-      HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
-      Put("   Analysis Result: ");
-      Put(HasInvalidBehaviour'Image); New_Line;
-      Put_Line("---------------------------------------------");
-      
-      -- generate a particular program
-      Put_Line("---------------------------------------------");
-      Put_Line("   Generating Test Program...");
-      GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
-      GenerateInstr(DIV, 0, 1, 2, 0, Prog(2));
-      GenerateInstr(RET, 0, 0, 0, 0, Prog(3));
-      -- perform dynamic analysis on this program
-      Put_Line("   Analysing Program for Invalid Behaviour...");
-      HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
-      Put("   Analysis Result: ");
-      Put(HasInvalidBehaviour'Image); New_Line;
-      Put_Line("---------------------------------------------");
-      
-      -- generate a particular program
-      Put_Line("---------------------------------------------");
-      Put_Line("   Generating Test Program...");
-      GenerateInstr(MOV, 2, 0, 0, 1, Prog(1));
-      GenerateInstr(DIV, 0, 1, 2, 0, Prog(2));
-      GenerateInstr(RET, 0, 0, 0, 0, Prog(3));
-      -- perform dynamic analysis on this program
-      Put_Line("   Analysing Program for Invalid Behaviour...");
-      HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
-      Put("   Analysis Result: ");
-      Put(HasInvalidBehaviour'Image); New_Line;
-      Put_Line("---------------------------------------------");
-      
-      -- generate a particular program
-      Put_Line("---------------------------------------------");
-      Put_Line("   Generating Test Program...");
-      GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
-      GenerateInstr(MOV, 2, 0, 0, 2, Prog(2));
-      GenerateInstr(DIV, 0, 1, 2, 0, Prog(3));
-      GenerateInstr(RET, 0, 0, 0, 0, Prog(4));
-      -- perform dynamic analysis on this program
-      Put_Line("   Analysing Program for Invalid Behaviour...");
-      HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
-      Put("   Analysis Result: ");
-      Put(HasInvalidBehaviour'Image); New_Line;
-      Put_Line("---------------------------------------------");
-   end DynamicAnalysisTest;
+--     -- generates instructions based on input parameters
+--     procedure GenerateInstr(Op : in OpCode; R1 : in Reg; R2 : in Reg; R3 : in Reg; Offs : Offset; Inst : out Instr) is
+--     begin
+--        case Op is
+--           when ADD =>
+--              Inst := (Op => ADD, AddRd => R1, AddRs1 => R2, AddRs2 => R3);
+--              return;
+--           when SUB =>
+--              Inst := (Op => SUB, SubRd => R1, SubRs1 => R2, SubRs2 => R3);
+--              return;
+--           when MUL =>
+--              Inst := (Op => MUL, MulRd => R1, MulRs1 => R2, MulRs2 => R3);
+--              return;
+--           when DIV =>
+--              Inst := (Op => DIV, DivRd => R1, DivRs1 => R2, DivRs2 => R3);
+--              return;
+--           when RET =>
+--              Inst := (Op => RET, RetRs => R1);
+--              return;
+--           when LDR =>
+--              Inst := (Op => LDR, LdrRd => R1, LdrRs => R2, LdrOffs => Offs);
+--              return;
+--           when STR =>
+--              Inst := (Op => STR, StrRa => R1, StrOffs => Offs, StrRb => R2);
+--              return;
+--           when MOV =>
+--              Inst := (Op => MOV, MovRd => R1, MovOffs => Offs);
+--              return;
+--           when JMP =>
+--              Inst := (Op => JMP, JmpOffs => Offs);
+--              return;
+--           when JZ =>
+--              Inst := (Op => JZ, JzRa => R1, JzOffs => Offs);
+--              return;
+--           when NOP =>
+--              Inst := (OP => NOP);
+--        end case;
+--     end GenerateInstr;
+--     
+--     -- generates custom assembly programs to run with dynamic analysis
+--     procedure DynamicAnalysisTest(Cycles : in Integer) is
+--        Prog : Program := (others => (Op => NOP));
+--        HasInvalidBehaviour : Boolean;
+--     begin
+--        -- generate a particular program
+--        Put_Line("---------------------------------------------");
+--        Put_Line("   Generating Test Program...");
+--        GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
+--        GenerateInstr(MOV, 2, 0, 0, 2, Prog(2));
+--        GenerateInstr(ADD, 0, 1, 2, 0, Prog(3));
+--        GenerateInstr(RET, 0, 0, 0, 0, Prog(4));
+--        -- perform dynamic analysis on this program
+--        Put_Line("   Analysing Program for Invalid Behaviour...");
+--        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
+--        Put("   Analysis Result: ");
+--        Put(HasInvalidBehaviour'Image); New_Line;
+--        Put_Line("---------------------------------------------");
+--        
+--        -- generate a particular program
+--        Put_Line("---------------------------------------------");
+--        Put_Line("   Generating Test Program...");
+--        GenerateInstr(DIV, 0, 0, 0, 0, Prog(1));
+--        GenerateInstr(RET, 0, 0, 0, 0, Prog(2));
+--        -- perform dynamic analysis on this program
+--        Put_Line("   Analysing Program for Invalid Behaviour...");
+--        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
+--        Put("   Analysis Result: ");
+--        Put(HasInvalidBehaviour'Image); New_Line;
+--        Put_Line("---------------------------------------------");
+--        
+--        -- generate a particular program
+--        Put_Line("---------------------------------------------");
+--        Put_Line("   Generating Test Program...");
+--        GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
+--        GenerateInstr(DIV, 0, 1, 2, 0, Prog(2));
+--        GenerateInstr(RET, 0, 0, 0, 0, Prog(3));
+--        -- perform dynamic analysis on this program
+--        Put_Line("   Analysing Program for Invalid Behaviour...");
+--        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
+--        Put("   Analysis Result: ");
+--        Put(HasInvalidBehaviour'Image); New_Line;
+--        Put_Line("---------------------------------------------");
+--        
+--        -- generate a particular program
+--        Put_Line("---------------------------------------------");
+--        Put_Line("   Generating Test Program...");
+--        GenerateInstr(MOV, 2, 0, 0, 1, Prog(1));
+--        GenerateInstr(DIV, 0, 1, 2, 0, Prog(2));
+--        GenerateInstr(RET, 0, 0, 0, 0, Prog(3));
+--        -- perform dynamic analysis on this program
+--        Put_Line("   Analysing Program for Invalid Behaviour...");
+--        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
+--        Put("   Analysis Result: ");
+--        Put(HasInvalidBehaviour'Image); New_Line;
+--        Put_Line("---------------------------------------------");
+--        
+--        -- generate a particular program
+--        Put_Line("---------------------------------------------");
+--        Put_Line("   Generating Test Program...");
+--        GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
+--        GenerateInstr(MOV, 2, 0, 0, 2, Prog(2));
+--        GenerateInstr(DIV, 0, 1, 2, 0, Prog(3));
+--        GenerateInstr(RET, 0, 0, 0, 0, Prog(4));
+--        -- perform dynamic analysis on this program
+--        Put_Line("   Analysing Program for Invalid Behaviour...");
+--        HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
+--        Put("   Analysis Result: ");
+--        Put(HasInvalidBehaviour'Image); New_Line;
+--        Put_Line("---------------------------------------------");
+--     end DynamicAnalysisTest;
    
 --     -- performs static analysis to detect invalid behaviour
 --     function StaticAnalysis(Prog : in Program) return Boolean is
@@ -719,12 +727,13 @@ package body Machine with SPARK_Mode is
    -- detects invalid behaviour before executing the program
    function DetectInvalidBehaviour(Prog : in Program; Cycles : in Integer) return Boolean is
    begin
-      return R : Boolean do
-         -- uncomment line below and procedures above to test custom programs
-         DynamicAnalysisTest(Cycles);
-         --           R := StaticAnalysis(Prog) and DynamicAnalysis(Prog, Cycles);
-         R := DynamicAnalysis(Prog, Cycles);
-      end return;
+      return DynamicAnalysis(Prog, Cycles);
+--        return R : Boolean do
+--           -- uncomment line below and procedures above to test custom programs
+--           DynamicAnalysisTest(Cycles);
+--           --           R := StaticAnalysis(Prog) and DynamicAnalysis(Prog, Cycles);
+--           R := DynamicAnalysis(Prog, Cycles);
+--        end return;
    end DetectInvalidBehaviour;
    
 end Machine;
