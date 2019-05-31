@@ -129,11 +129,14 @@ package body Machine with SPARK_Mode is
    end DoStr;
    
    -- performs MOV instruction
-   procedure DoMov(Rd : in Reg; Offs : in Offset; Ret : out ReturnCode; Regs : in out IntegerRegister) with
-      Pre => Integer(Offs) >= Integer(IntegerVal'First) and then Integer(Offs) <= Integer(IntegerVal'Last) is
+   procedure DoMov(Rd : in Reg; Offs : in Offset; Ret : out ReturnCode; Regs : in out IntegerRegister) is
    begin
-      Regs(Rd) := IntegerVal(Offs);
-      Ret := Success;
+      if Integer(Offs) >= Integer(IntegerVal'First) and Integer(Offs) <= Integer(IntegerVal'Last) then
+         Regs(Rd) := IntegerVal(Offs);
+         Ret := Success;
+      else
+         Ret := IllegalProgram;
+      end if;
    end DoMov;
    
    -- executes the virtual machine
@@ -213,10 +216,17 @@ package body Machine with SPARK_Mode is
    -- detects invalid ADD instruction behaviour
    function DetectInvalidAdd(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (DetectUninitializedVariable(Regs(Inst.AddRs1))) or
-             (DetectUninitializedVariable(Regs(Inst.AddRs2))) or
+      return -- {Rb : ?, Rc : ?}
+             (DetectUninitializedVariable(Regs(Inst.AddRs1)) and DetectUninitializedVariable(Regs(Inst.AddRs2))) or
+             -- {Rb : 0, Rc : ?}
+             (Regs(Inst.AddRs1).State = Initialized and then Regs(Inst.AddRs2).State = Uninitialized and then Regs(Inst.AddRs1).Value /= 0) or
+             -- {Rb : ?, Rc : 0}
+             (Regs(Inst.AddRs1).State = Uninitialized and then Regs(Inst.AddRs2).State = Initialized and then Regs(Inst.AddRs2).Value /= 0) or
+             -- {Rb : X, Rc : Y}
              (Regs(Inst.AddRs1).State = Initialized and then Regs(Inst.AddRs2).State = Initialized and then (
+                -- {Rb : X, Rc : +Y}
                 (Regs(Inst.AddRs2).Value > 0 and then Regs(Inst.AddRs1).Value > IntegerVal'Last - Regs(Inst.AddRs2).Value) or
+                -- {Rb : X, Rc : -Y}
                 (Regs(Inst.AddRs2).Value < 0 and then Regs(Inst.AddRs1).Value < IntegerVal'First - Regs(Inst.AddRs2).Value)
              ));
    end DetectInvalidAdd;
@@ -224,10 +234,17 @@ package body Machine with SPARK_Mode is
    -- detects invalid SUB instruction behaviour
    function DetectInvalidSub(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (DetectUninitializedVariable(Regs(Inst.SubRs1))) or
-             (DetectUninitializedVariable(Regs(Inst.SubRs2))) or
+      return -- {Rb : ?, Rc : ?}
+             (DetectUninitializedVariable(Regs(Inst.SubRs1)) and DetectUninitializedVariable(Regs(Inst.SubRs2))) or
+             -- {Rb : -1, Rc : ?}
+             (Regs(Inst.SubRs1).State = Initialized and then Regs(Inst.SubRs2).State = Uninitialized and then Regs(Inst.SubRs1).Value /= -1) or
+             -- {Rb : ?, Rc : 0}
+             (Regs(Inst.SubRs1).State = Uninitialized and then Regs(Inst.SubRs2).State = Initialized and then Regs(Inst.SubRs2).Value /= 0) or
+             -- {Rb : X, Rc : Y}
              (Regs(Inst.SubRs1).State = Initialized and then Regs(Inst.SubRs2).State = Initialized and then (
-                (Regs(Inst.SubRs2).Value < 0 and then (Regs(Inst.SubRs1).Value > IntegerVal'Last +  Regs(Inst.SubRs2).Value)) or
+                -- {Rb : X, Rc : -Y}
+                (Regs(Inst.SubRs2).Value < 0 and then (Regs(Inst.SubRs1).Value > IntegerVal'Last + Regs(Inst.SubRs2).Value)) or
+                -- {Rb : X, Rc : +Y}
                 (Regs(Inst.SubRs2).Value > 0 and then (Regs(Inst.SubRs1).Value < IntegerVal'First + Regs(Inst.SubRs2).Value))
              ));
    end DetectInvalidSub;
@@ -235,11 +252,27 @@ package body Machine with SPARK_Mode is
    -- detects invalid MUL instruction behaviour
    function DetectInvalidMul(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (DetectUninitializedVariable(Regs(Inst.MulRs1))) or
-             (DetectUninitializedVariable(Regs(Inst.MulRs2))) or
+      return -- {Rb : ?, Rc : ?}
+             (DetectUninitializedVariable(Regs(Inst.MulRs1)) and DetectUninitializedVariable(Regs(Inst.MulRs2))) or
+             -- {Rb : 1, Rc : ?}
+             (Regs(Inst.MulRs1).State = Initialized and then Regs(Inst.MulRs2).State = Uninitialized and then Regs(Inst.MulRs1).Value /= 1) or
+             -- {Rb : 0, Rc : ?}
+             (Regs(Inst.MulRs1).State = Initialized and then Regs(Inst.MulRs2).State = Uninitialized and then Regs(Inst.MulRs1).Value /= 0) or
+             -- {Rb : ?, Rc : 1}
+             (Regs(Inst.MulRs1).State = Uninitialized and then Regs(Inst.MulRs2).State = Initialized and then Regs(Inst.MulRs2).Value /= 1) or
+             -- {Rb : ?, Rc : 0}
+             (Regs(Inst.MulRs1).State = Uninitialized and then Regs(Inst.MulRs2).State = Initialized and then Regs(Inst.MulRs2).Value /= 0) or
+             -- {Rb : X, Rc : Y}
              (Regs(Inst.MulRs1).State = Initialized and then Regs(Inst.MulRs2).State = Initialized and then (
-                (Regs(Inst.MulRs1).Value < 0 and then Regs(Inst.MulRs2).Value < 0 and then Regs(Inst.MulRs1).Value < IntegerVal'Last / Regs(Inst.MulRs2).Value) or
+                -- {Rb : +X, Rc : +Y}
+                (Regs(Inst.MulRs1).Value > 0 and then Regs(Inst.MulRs2).Value > 0 and then Regs(Inst.MulRs1).Value > IntegerVal'Last / Regs(Inst.MulRs2).Value) or
+                -- {Rb : -X, Rc : -Y}
+                (Regs(Inst.MulRs1).Value < 0 and then Regs(Inst.MulRs2).Value < 0 and then Regs(Inst.MulRs1).Value > IntegerVal'Last / Regs(Inst.MulRs2).Value) or
+                -- {Rb : +X, Rc : -Y}
+                (Regs(Inst.MulRs1).Value > 0 and then Regs(Inst.MulRs2).Value < 0 and then Regs(Inst.MulRs1).Value < IntegerVal'First / Regs(Inst.MulRs2).Value) or
+                -- {Rb : -X, Rc : +Y}
                 (Regs(Inst.MulRs1).Value < 0 and then Regs(Inst.MulRs2).Value > 0 and then Regs(Inst.MulRs1).Value < IntegerVal'First / Regs(Inst.MulRs2).Value) or
+                -- {Rb : X, Rc : /0}
                 (Regs(Inst.MulRs2).Value /= 0 and then Regs(Inst.MulRs1).Value > 0 and then Regs(Inst.MulRs1).Value > IntegerVal'Last / Regs(Inst.MulRs2).Value)
              ));
    end DetectInvalidMul;
@@ -247,10 +280,19 @@ package body Machine with SPARK_Mode is
    -- detects invalid DIV instruction behaviour
    function DetectInvalidDiv(Inst : in Instr; Regs: in Register) return Boolean is
    begin
-      return (DetectUninitializedVariable(Regs(Inst.DivRs1))) or
-             (DetectUninitializedVariable(Regs(Inst.DivRs2))) or
+      return -- {Rb : ?, Rc : ?}
+             (DetectUninitializedVariable(Regs(Inst.DivRs1)) and DetectUninitializedVariable(Regs(Inst.DivRs2))) or
+             -- {Rb : X, Rc : ?}
+             (Regs(Inst.DivRs1).State = Initialized and then Regs(Inst.DivRs2).State = Uninitialized) or
+             -- {Rb : ?, Rc : 0}
+             (Regs(Inst.DivRs1).State = Uninitialized and then Regs(Inst.DivRs2).State = Initialized and then Regs(Inst.DivRs2).Value = 0) or
+             -- {Rb : ?, Rc : -1}
+             (Regs(Inst.DivRs1).State = Uninitialized and then Regs(Inst.DivRs2).State = Initialized and then Regs(Inst.DivRs2).Value = -1) or
+             -- {Rb : X, Rc : Y}
              (Regs(Inst.DivRs1).State = Initialized and then Regs(Inst.DivRs2).State = Initialized and then (
+                -- {Rb : X, Rc : 0}
                 (Regs(Inst.DivRs2).Value = 0) or
+                -- {Rb : -(2**31), Rc : -1}
                 (Regs(Inst.DivRs1).Value = IntegerVal'First and Regs(Inst.DivRs2).Value = -1)
              ));
    end DetectInvalidDiv;
@@ -278,29 +320,42 @@ package body Machine with SPARK_Mode is
    -- detects invalid MOV instruction behaviour
    function DetectInvalidMov(Inst : in Instr) return Boolean is
    begin
-      return (Inst.MovOffs < -(2**31)) or
-             (Inst.MovOffs > (2**31 - 1));
+      return -- MOV Ra -65536
+             (Inst.MovOffs < Offset'First) or
+             -- MOV Ra 65536
+             (Inst.MovOffs > Offset'Last);
    end DetectInvalidMov;
 
    -- detects invalid JMP instruction behaviour
    function DetectInvalidJmp(Inst : in Instr; PC : in ProgramCounter) return Boolean is
    begin
-      return (Integer(Inst.JmpOffs) = 0) or -- infinite loop
-             (Integer(PC) + Integer(Inst.JmpOffs) < 0) or
+      return -- JMP 0 (infinite loop)
+             (Integer(Inst.JmpOffs) = 0) or
+             -- JMP before program starts
+             (Integer(PC) + Integer(Inst.JmpOffs) < 1) or
+             -- JMP after program ends
              (Integer(PC) + Integer(Inst.JmpOffs) > 65535);
    end DetectInvalidJmp;
    
    -- detects invalid JZ instruction behaviour
    function DetectInvalidJz(Inst : in Instr; PC : in ProgramCounter; Regs: in Register) return Boolean is
    begin
-      return (DetectUninitializedVariable(Regs(Inst.JzRa))) or
+      return -- {Ra : ?}
+             (DetectUninitializedVariable(Regs(Inst.JzRa))) or
+             -- JZ 0 X
              (Regs(Inst.JzRa).State = Initialized and then Regs(Inst.JzRa).Value = 0 and then (
-                (Integer(Inst.JzOffs) = 0) or -- infinite loop
-                (Integer(PC) + Integer(Inst.JzOffs) < 0) or
+                -- JZ 0 0 (infinite loop)
+                (Integer(Inst.JzOffs) = 0) or
+                -- JZ before program starts
+                (Integer(PC) + Integer(Inst.JzOffs) < 1) or
+                -- JZ after program ends
                 (Integer(PC) + Integer(Inst.JzOffs) > 65535))
              ) or
+             -- JZ /0 X
              (Regs(Inst.JzRa).State = Initialized and then Regs(Inst.JzRa).Value /= 0 and then (
-                (Integer(PC) + 1 < 0) or
+                -- JZ before program starts
+                (Integer(PC) + 1 < 1) or
+                -- JZ after program ends
                 (Integer(PC) + 1 > 65535))
              );
    end DetectInvalidJz;
@@ -322,8 +377,16 @@ package body Machine with SPARK_Mode is
    procedure PerformAdd(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
       if not (DetectInvalidAdd(Inst, Regs) or DetectInvalidPC(PC, 1)) then
-         Regs(Inst.AddRd) := (State => Initialized,
-                              Value => Regs(Inst.AddRs1).Value + Regs(Inst.AddRs2).Value);
+         if Regs(Inst.AddRs1).State = Initialized and then Regs(Inst.AddRs2).State = Initialized then
+            Regs(Inst.AddRd) := (State => Initialized,
+                                 Value => Regs(Inst.AddRs1).Value + Regs(Inst.AddRs2).Value);
+         elsif Regs(Inst.AddRs1).State = Initialized and then Regs(Inst.AddRs2).State = Uninitialized then
+            Regs(Inst.AddRd) := (State => Initialized,
+                                 Value => Regs(Inst.AddRs1).Value + Regs(Inst.AddRs2).Garbage);
+         elsif Regs(Inst.AddRs1).State = Uninitialized and then Regs(Inst.AddRs2).State = Initialized then
+            Regs(Inst.AddRd) := (State => Initialized,
+                                 Value => Regs(Inst.AddRs1).Garbage + Regs(Inst.AddRs2).Value);
+         end if;
          PC := ProgramCounter(Integer(PC) + Integer(1));
          Ret := False;
       end if;
@@ -333,8 +396,16 @@ package body Machine with SPARK_Mode is
    procedure PerformSub(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
       if not (DetectInvalidSub(Inst, Regs) or DetectInvalidPC(PC, 1)) then
-         Regs(Inst.SubRd) := (State => Initialized,
-                              Value => Regs(Inst.SubRs1).Value - Regs(Inst.SubRs2).Value);
+         if Regs(Inst.SubRs1).State = Initialized and then Regs(Inst.SubRs2).State = Initialized then
+            Regs(Inst.SubRd) := (State => Initialized,
+                                 Value => Regs(Inst.SubRs1).Value - Regs(Inst.SubRs2).Value);
+         elsif Regs(Inst.SubRs1).State = Initialized and then Regs(Inst.SubRs2).State = Uninitialized then
+            Regs(Inst.SubRd) := (State => Initialized,
+                                 Value => Regs(Inst.SubRs1).Value - Regs(Inst.SubRs2).Garbage);
+         elsif Regs(Inst.SubRs1).State = Uninitialized and then Regs(Inst.SubRs2).State = Initialized then
+            Regs(Inst.SubRd) := (State => Initialized,
+                                 Value => Regs(Inst.SubRs1).Garbage - Regs(Inst.SubRs2).Value);
+         end if;
          PC := ProgramCounter(Integer(PC) + Integer(1));
          Ret := False;
       end if;
@@ -344,8 +415,16 @@ package body Machine with SPARK_Mode is
    procedure PerformMul(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
       if not (DetectInvalidMul(Inst, Regs) or DetectInvalidPC(PC, 1)) then
-         Regs(Inst.MulRd) := (State => Initialized,
-                              Value => Regs(Inst.MulRs1).Value * Regs(Inst.MulRs2).Value);
+         if Regs(Inst.MulRs1).State = Initialized and then Regs(Inst.MulRs2).State = Initialized then
+            Regs(Inst.MulRd) := (State => Initialized,
+                                 Value => Regs(Inst.MulRs1).Value * Regs(Inst.MulRs2).Value);
+         elsif Regs(Inst.MulRs1).State = Initialized and then Regs(Inst.MulRs2).State = Uninitialized then
+            Regs(Inst.MulRd) := (State => Initialized,
+                                 Value => Regs(Inst.MulRs1).Value * Regs(Inst.MulRs2).Garbage);
+         elsif Regs(Inst.MulRs1).State = Uninitialized and then Regs(Inst.MulRs2).State = Initialized then
+            Regs(Inst.MulRd) := (State => Initialized,
+                                 Value => Regs(Inst.MulRs1).Garbage * Regs(Inst.MulRs2).Value);
+         end if;
          PC := ProgramCounter(Integer(PC) + Integer(1));
          Ret := False;
       end if;
@@ -355,8 +434,13 @@ package body Machine with SPARK_Mode is
    procedure PerformDiv(Inst : in Instr; PC : in out ProgramCounter; Regs : in out Register; Ret : in out Boolean) is
    begin
       if not (DetectInvalidDiv(Inst, Regs) or DetectInvalidPC(PC, 1)) then
-         Regs(Inst.DivRd) := (State => Initialized,
-                              Value => Regs(Inst.DivRs1).Value / Regs(Inst.DivRs2).Value);
+         if Regs(Inst.DivRs1).State = Initialized and Regs(Inst.DivRs2).State = Initialized then
+            Regs(Inst.DivRd) := (State => Initialized,
+                                 Value => Regs(Inst.DivRs1).Value / Regs(Inst.DivRs2).Value);
+         elsif Regs(Inst.DivRs1).State = Uninitialized and then Regs(Inst.DivRs2).State = Initialized then
+            Regs(Inst.DivRd) := (State => Initialized,
+                                 Value => Regs(Inst.DivRs1).Garbage / Regs(Inst.DivRs2).Value);
+         end if;
          PC := ProgramCounter(Integer(PC) + Integer(1));
          Ret := False;
       end if;
@@ -555,7 +639,20 @@ package body Machine with SPARK_Mode is
       Put_Line("---------------------------------------------");
       Put_Line("   Generating Test Program...");
       GenerateInstr(DIV, 0, 0, 0, 0, Prog(1));
-      GenerateInstr(MOV, 0, 0, 0, 0, Prog(2));
+      GenerateInstr(RET, 0, 0, 0, 0, Prog(2));
+      -- perform dynamic analysis on this program
+      Put_Line("   Analysing Program for Invalid Behaviour...");
+      HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
+      Put("   Analysis Result: ");
+      Put(HasInvalidBehaviour'Image); New_Line;
+      Put_Line("---------------------------------------------");
+      
+      -- generate a particular program
+      Put_Line("---------------------------------------------");
+      Put_Line("   Generating Test Program...");
+      GenerateInstr(MOV, 1, 0, 0, 1, Prog(1));
+      GenerateInstr(DIV, 0, 1, 2, 0, Prog(2));
+      GenerateInstr(RET, 0, 0, 0, 0, Prog(3));
       -- perform dynamic analysis on this program
       Put_Line("   Analysing Program for Invalid Behaviour...");
       HasInvalidBehaviour := DynamicAnalysis(Prog, Cycles);
@@ -590,6 +687,34 @@ package body Machine with SPARK_Mode is
       Put(HasInvalidBehaviour'Image); New_Line;
       Put_Line("---------------------------------------------");
    end DynamicAnalysisTest;
+   
+--     -- performs static analysis to detect invalid behaviour
+--     function StaticAnalysis(Prog : in Program) return Boolean is
+--        CycleCount : Integer := 0;
+--        RetCount : Integer := 0;
+--        Inst : Instr;
+--        Ret : Boolean := True;
+--     begin
+--        for CycleCount in MAX_PROGRAM_LENGTH loop
+--           Inst := Prog(PC);
+--           Ret := True;
+--           
+--           -- debug print pc and current instruction
+--           Put(Integer(PC)); Put(':'); Put(Ada.Characters.Latin_1.HT);
+--           DebugPrintInstr(Inst);
+--           New_Line;
+--           
+--           -- count the number of RET instructions
+--           case Inst.Op is
+--              when Instruction.RET =>
+--                 RetCount := RetCount + 1;
+--           end case;
+--           
+--           -- terminate early if invalid behaviour detected
+--           exit when (Ret = True);
+--           CycleCount := CycleCount + 1;
+--        end loop;
+--     end StaticAnalysis;
 
    -- detects invalid behaviour before executing the program
    function DetectInvalidBehaviour(Prog : in Program; Cycles : in Integer) return Boolean is
@@ -597,6 +722,7 @@ package body Machine with SPARK_Mode is
       return R : Boolean do
          -- uncomment line below and procedures above to test custom programs
          DynamicAnalysisTest(Cycles);
+         --           R := StaticAnalysis(Prog) and DynamicAnalysis(Prog, Cycles);
          R := DynamicAnalysis(Prog, Cycles);
       end return;
    end DetectInvalidBehaviour;
